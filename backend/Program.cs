@@ -39,6 +39,15 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 // =============================================================================
+// Auto-apply EF Core migrations on startup (safe in production containers)
+// =============================================================================
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
+
+// =============================================================================
 // HTTP Request Pipeline Middleware
 // =============================================================================
 // Global error handling middleware (prevents leaking internal details)
@@ -58,7 +67,7 @@ app.MapGet("/", () => Results.Ok(new
 {
     status = "healthy",
     service = "SchoolAdmissionAPI",
-    message = "Phase 3: Admission Hold System active."
+    message = "Phase 4: Admission Hold Lifecycle active."
 }));
 
 app.Run();
