@@ -1,0 +1,18 @@
+## .NET Core build artifacts
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## IDE & Editor files
+.vscode/
+.vs/
+.idea/
+
+## Local Environment and Secrets
+**/appsettings.Development.json
+*.local.json
+.env
+.env.local
