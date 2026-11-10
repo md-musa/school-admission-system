@@ -204,6 +204,201 @@ public class AdmissionHoldService : IAdmissionHoldService
         };
     }
 
+    /// <inheritdoc />
+    public async Task<ConfirmHoldResponseDto> ConfirmHoldAsync(
+        Guid holdId,
+        string studentId,
+        CancellationToken cancellationToken = default)
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync(
+            IsolationLevel.ReadCommitted, cancellationToken);
+
+        try
+        {
+            // Lock the hold row using SELECT … FOR UPDATE so expiration and confirmation cannot race
+            var hold = (await _context.AdmissionHolds
+                .FromSqlInterpolated($"SELECT * FROM \"AdmissionHolds\" WHERE \"Id\" = {holdId} FOR UPDATE")
+                .ToListAsync(cancellationToken))
+                .FirstOrDefault();
+
+            if (hold == null)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw new NotFoundException($"Admission hold with ID '{holdId}' was not found.");
+            }
+
+            // Ownership check — prevents a student from confirming another student's hold
+            if (hold.StudentId != studentId)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw new NotFoundException($"Admission hold with ID '{holdId}' was not found.");
+            }
+
+            var now = DateTime.UtcNow;
+
+            // Idempotent: already confirmed by the same student → return 200 immediately
+            if (hold.Status == AdmissionHoldStatus.CONFIRMED)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return new ConfirmHoldResponseDto { HoldId = hold.Id, Status = "CONFIRMED" };
+            }
+
+            // Reject CANCELLED holds
+            if (hold.Status == AdmissionHoldStatus.CANCELLED)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw new ConflictException("A cancelled hold cannot be confirmed.");
+            }
+
+            // Detect expiration (even if still stored as HELD)
+            if (hold.Status == AdmissionHoldStatus.HELD && hold.ExpiresAt <= now)
+            {
+                hold.Status = AdmissionHoldStatus.EXPIRED;
+                await _context.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+                _logger.LogInformation("Hold {HoldId} expired at confirmation time. Status set to EXPIRED.", holdId);
+                throw new ConflictException("The hold has expired and the seat has been released. Please create a new hold.");
+            }
+
+            // All checks passed — confirm the hold
+            hold.Status = AdmissionHoldStatus.CONFIRMED;
+            hold.ConfirmedAt = now;
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            _logger.LogInformation("Hold {HoldId} confirmed for student {StudentId}.", holdId, studentId);
+            return new ConfirmHoldResponseDto { HoldId = hold.Id, Status = "CONFIRMED" };
+        }
+        catch (Exception ex) when (ex is not NotFoundException && ex is not ConflictException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Unexpected error confirming hold {HoldId} for student {StudentId}.", holdId, studentId);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task CancelHoldAsync(
+        Guid holdId,
+        string studentId,
+        CancellationToken cancellationToken = default)
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync(
+            IsolationLevel.ReadCommitted, cancellationToken);
+
+        try
+        {
+            // Lock the hold row
+            var hold = (await _context.AdmissionHolds
+                .FromSqlInterpolated($"SELECT * FROM \"AdmissionHolds\" WHERE \"Id\" = {holdId} FOR UPDATE")
+                .ToListAsync(cancellationToken))
+                .FirstOrDefault();
+
+            if (hold == null)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw new NotFoundException($"Admission hold with ID '{holdId}' was not found.");
+            }
+
+            // Ownership check
+            if (hold.StudentId != studentId)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw new NotFoundException($"Admission hold with ID '{holdId}' was not found.");
+            }
+
+            // Reject cancellation of a confirmed admission
+            if (hold.Status == AdmissionHoldStatus.CONFIRMED)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw new ConflictException(
+                    "A confirmed admission cannot be cancelled through this endpoint. " +
+                    "Please contact the admission office.");
+            }
+
+            // Idempotent: already cancelled → succeed silently
+            if (hold.Status == AdmissionHoldStatus.CANCELLED)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return;
+            }
+
+            // Handle expired-but-still-HELD records consistently
+            var now = DateTime.UtcNow;
+            if (hold.Status == AdmissionHoldStatus.HELD && hold.ExpiresAt <= now)
+            {
+                // Treat as expired — update to EXPIRED and return success without releasing a seat
+                // (the seat was never occupied since the hold expired)
+                hold.Status = AdmissionHoldStatus.EXPIRED;
+                await _context.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+                _logger.LogInformation("Hold {HoldId} had already expired; recorded as EXPIRED during cancel.", holdId);
+                return;
+            }
+
+            // Cancel the HELD record
+            hold.Status = AdmissionHoldStatus.CANCELLED;
+            hold.CancelledAt = now;
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            _logger.LogInformation("Hold {HoldId} cancelled by student {StudentId}.", holdId, studentId);
+        }
+        catch (Exception ex) when (ex is not NotFoundException && ex is not ConflictException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex, "Unexpected error cancelling hold {HoldId} for student {StudentId}.", holdId, studentId);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<StudentApplicationDto>> GetStudentApplicationsAsync(
+        string studentId,
+        CancellationToken cancellationToken = default)
+    {
+        var now = DateTime.UtcNow;
+
+        // Expire any stale HELD records for this student before fetching
+        var staleHolds = await _context.AdmissionHolds
+            .Where(h => h.StudentId == studentId
+                     && h.Status == AdmissionHoldStatus.HELD
+                     && h.ExpiresAt <= now)
+            .ToListAsync(cancellationToken);
+
+        if (staleHolds.Count > 0)
+        {
+            foreach (var stale in staleHolds)
+                stale.Status = AdmissionHoldStatus.EXPIRED;
+
+            await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation(
+                "Expired {Count} stale hold(s) for student {StudentId} during application history retrieval.",
+                staleHolds.Count, studentId);
+        }
+
+        // Fetch all holds with class name via a join
+        var applications = await _context.AdmissionHolds
+            .AsNoTracking()
+            .Where(h => h.StudentId == studentId)
+            .Join(_context.AdmissionClasses,
+                  h => h.ClassId,
+                  c => c.Id,
+                  (h, c) => new StudentApplicationDto
+                  {
+                      HoldId = h.Id,
+                      ClassId = h.ClassId,
+                      ClassName = c.Name,
+                      StudentId = h.StudentId,
+                      Status = h.Status.ToString(),
+                      ExpiresAt = h.ExpiresAt
+                  })
+            .OrderByDescending(a => a.ExpiresAt)
+            .ToListAsync(cancellationToken);
+
+        return applications;
+    }
+
     private static bool IsUniqueConstraintViolation(DbUpdateException ex)
     {
         if (ex.InnerException is PostgresException postgresException)
