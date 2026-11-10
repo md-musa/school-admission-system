@@ -1,0 +1,77 @@
+@baseUrl = http://localhost:5076
+
+### 1. Health Check
+GET {{baseUrl}}/
+Accept: application/json
+
+### 2. Create Admission Class (Valid)
+POST {{baseUrl}}/classes
+Content-Type: application/json
+
+{
+  "name": "Class 6 - Morning Shift",
+  "totalSeats": 120
+}
+
+### 3. Create Admission Class (Invalid - Empty name & 0 seats)
+POST {{baseUrl}}/classes
+Content-Type: application/json
+
+{
+  "name": "",
+  "totalSeats": 0
+}
+
+### 4. Get All Admission Classes (Includes calculated held, confirmed, available seats)
+GET {{baseUrl}}/classes
+Accept: application/json
+
+### 5. Get Admission Class by ID (Replace with a valid UUID from step 2 or 4)
+# Example UUID:
+GET {{baseUrl}}/classes/641cf783-6881-4ca1-b400-a6b9b00a9918
+Accept: application/json
+
+### 6. Get Non-existent Admission Class (404 Not Found)
+GET {{baseUrl}}/classes/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+### ===========================================================================
+### Phase 3: Admission Hold System Endpoints
+### ===========================================================================
+
+### 7. Create Admission Hold (Valid - Endpoint A)
+# Replace {classId} with a valid UUID from step 2 or step 4
+POST {{baseUrl}}/classes/d454f25f-652e-47b1-921d-179f38362285/holds
+X-Student-Id: 20152691234567890
+Content-Type: application/json
+
+{}
+
+### 8. Create Admission Hold (Invalid - Missing X-Student-Id Header -> 400 Bad Request)
+POST {{baseUrl}}/classes/d454f25f-652e-47b1-921d-179f38362285/holds
+Content-Type: application/json
+
+{}
+
+### 9. Create Admission Hold (Invalid - Less than 17 digits -> 400 Bad Request)
+POST {{baseUrl}}/classes/d454f25f-652e-47b1-921d-179f38362285/holds
+X-Student-Id: 12345
+Content-Type: application/json
+
+{}
+
+### 10. Create Admission Hold (Non-existent class -> 404 Not Found)
+POST {{baseUrl}}/classes/00000000-0000-0000-0000-000000000000/holds
+X-Student-Id: 20152691234567890
+Content-Type: application/json
+
+{}
+
+### 11. Get Hold Details by ID (Endpoint B)
+# Replace {holdId} with the UUID returned from step 7
+GET {{baseUrl}}/holds/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+### 12. Get Non-existent Hold (404 Not Found)
+GET {{baseUrl}}/holds/ffffffff-ffff-ffff-ffff-ffffffffffff
+Accept: application/json

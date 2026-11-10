@@ -2,6 +2,7 @@ namespace SchoolAdmissionAPI.Middleware;
 
 using System.Net;
 using System.Text.Json;
+using SchoolAdmissionAPI.Exceptions;
 
 /// <summary>
 /// Global exception handling middleware.
@@ -13,9 +14,9 @@ public class GlobalExceptionMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<GlobalExceptionMiddleware> _logger;
 
-    public GlobalExceptionMiddleware(RequestDelegate _next, ILogger<GlobalExceptionMiddleware> logger)
+    public GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
     {
-        this._next = _next;
+        _next = next;
         _logger = logger;
     }
 
@@ -29,6 +30,16 @@ public class GlobalExceptionMiddleware
         {
             _logger.LogWarning(ex, "Client validation or argument error: {Message}", ex.Message);
             await WriteErrorResponseAsync(context, HttpStatusCode.BadRequest, "Bad Request", ex.Message);
+        }
+        catch (NotFoundException ex)
+        {
+            _logger.LogWarning(ex, "Resource not found: {Message}", ex.Message);
+            await WriteErrorResponseAsync(context, HttpStatusCode.NotFound, "Not Found", ex.Message);
+        }
+        catch (ConflictException ex)
+        {
+            _logger.LogWarning(ex, "Business conflict: {Message}", ex.Message);
+            await WriteErrorResponseAsync(context, HttpStatusCode.Conflict, "Conflict", ex.Message);
         }
         catch (Exception ex)
         {

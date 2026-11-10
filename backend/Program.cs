@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using SchoolAdmissionAPI.Configuration;
 using SchoolAdmissionAPI.Data;
 using SchoolAdmissionAPI.Middleware;
 using SchoolAdmissionAPI.Services;
+using SchoolAdmissionAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,10 +21,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 // =============================================================================
+// Application Configuration & Options
+// =============================================================================
+builder.Services.Configure<AdmissionSettings>(
+    builder.Configuration.GetSection(AdmissionSettings.SectionName));
+
+// =============================================================================
 // Application Services & Dependency Injection
 // =============================================================================
 // Register business logic services
 builder.Services.AddScoped<IClassService, ClassService>();
+builder.Services.AddScoped<IAdmissionHoldService, AdmissionHoldService>();
 
 // Register MVC controllers with automatic model validation and camelCase JSON
 builder.Services.AddControllers();
@@ -49,7 +58,7 @@ app.MapGet("/", () => Results.Ok(new
 {
     status = "healthy",
     service = "SchoolAdmissionAPI",
-    message = "Phase 2: Class Management APIs active."
+    message = "Phase 3: Admission Hold System active."
 }));
 
 app.Run();

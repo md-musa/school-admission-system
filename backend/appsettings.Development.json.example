@@ -6,7 +6,10 @@
       "Microsoft.EntityFrameworkCore.Database.Command": "Information"
     }
   },
+  "AdmissionSettings": {
+    "HoldDurationSeconds": 600
+  },
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=school_admission_db;Username=postgres;Password=YOUR_POSTGRES_PASSWORD"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=school_admission_db;Username=postgres;Password=musa"
   }
 }
