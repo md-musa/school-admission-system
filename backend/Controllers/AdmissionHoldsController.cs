@@ -7,7 +7,7 @@ using SchoolAdmissionAPI.Services.Interfaces;
 
 /// <summary>
 /// API Controller for Admission Hold operations.
-/// Exposes endpoints to reserve seats and inspect hold details.
+/// Exposes endpoints to reserve, confirm, cancel, and retrieve admission seat holds.
 /// </summary>
 [ApiController]
 [Produces("application/json")]
@@ -26,14 +26,29 @@ public class AdmissionHoldsController : ControllerBase
         _logger = logger;
     }
 
+    // -------------------------------------------------------------------------
+    // Shared helper
+    // -------------------------------------------------------------------------
+
+    private IActionResult InvalidStudentIdResult() => BadRequest(new
+    {
+        statusCode = StatusCodes.Status400BadRequest,
+        error = "Bad Request",
+        message = "Header 'X-Student-Id' is required and must contain exactly 17 numeric digits.",
+        timestamp = DateTime.UtcNow
+    });
+
+    private bool IsValidStudentId(string? id) =>
+        !string.IsNullOrWhiteSpace(id) && StudentIdRegex.IsMatch(id);
+
+    // -------------------------------------------------------------------------
+    // POST /classes/{classId}/holds
+    // -------------------------------------------------------------------------
+
     /// <summary>
     /// Creates a temporary admission seat hold for the specified class.
     /// Student ID must be supplied via the X-Student-Id header (exactly 17 numeric digits).
     /// </summary>
-    /// <param name="classId">Admission class identifier (UUID).</param>
-    /// <param name="studentId">17-digit student identifier from X-Student-Id header.</param>
-    /// <param name="cancellationToken">Request cancellation token.</param>
-    /// <returns>HTTP 201 Created with the created hold details.</returns>
     [HttpPost("classes/{classId:guid}/holds")]
     [ProducesResponseType(typeof(CreateHoldResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -44,18 +59,10 @@ public class AdmissionHoldsController : ControllerBase
         [FromHeader(Name = "X-Student-Id")] string? studentId,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(studentId) || !StudentIdRegex.IsMatch(studentId))
-        {
-            return BadRequest(new
-            {
-                statusCode = StatusCodes.Status400BadRequest,
-                error = "Bad Request",
-                message = "Header 'X-Student-Id' is required and must contain exactly 17 numeric digits.",
-                timestamp = DateTime.UtcNow
-            });
-        }
+        if (!IsValidStudentId(studentId))
+            return InvalidStudentIdResult();
 
-        var hold = await _holdService.CreateHoldAsync(classId, studentId, cancellationToken);
+        var hold = await _holdService.CreateHoldAsync(classId, studentId!, cancellationToken);
 
         return CreatedAtAction(
             nameof(GetHoldById),
@@ -63,13 +70,14 @@ public class AdmissionHoldsController : ControllerBase
             hold);
     }
 
+    // -------------------------------------------------------------------------
+    // GET /holds/{holdId}
+    // -------------------------------------------------------------------------
+
     /// <summary>
     /// Retrieves details of an existing admission hold.
     /// If the hold has passed its expiration time, its status is automatically updated to EXPIRED.
     /// </summary>
-    /// <param name="holdId">Unique hold identifier (UUID).</param>
-    /// <param name="cancellationToken">Request cancellation token.</param>
-    /// <returns>HTTP 200 OK with hold details, or HTTP 404 Not Found if hold does not exist.</returns>
     [HttpGet("holds/{holdId:guid}")]
     [ProducesResponseType(typeof(HoldDetailsResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -90,5 +98,79 @@ public class AdmissionHoldsController : ControllerBase
         }
 
         return Ok(hold);
+    }
+
+    // -------------------------------------------------------------------------
+    // POST /holds/{holdId}/confirm
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Confirms an active seat reservation. Idempotent for already-confirmed holds.
+    /// The hold must be in HELD status and not expired. 
+    /// A student can only confirm their own hold (X-Student-Id must match).
+    /// </summary>
+    [HttpPost("holds/{holdId:guid}/confirm")]
+    [ProducesResponseType(typeof(ConfirmHoldResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> ConfirmHold(
+        [FromRoute] Guid holdId,
+        [FromHeader(Name = "X-Student-Id")] string? studentId,
+        CancellationToken cancellationToken)
+    {
+        if (!IsValidStudentId(studentId))
+            return InvalidStudentIdResult();
+
+        var result = await _holdService.ConfirmHoldAsync(holdId, studentId!, cancellationToken);
+        return Ok(result);
+    }
+
+    // -------------------------------------------------------------------------
+    // DELETE /holds/{holdId}
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Cancels an active (HELD) seat reservation. The hold record is preserved in the database.
+    /// Confirmed applications cannot be cancelled through this endpoint.
+    /// Already-cancelled holds are handled idempotently (HTTP 204).
+    /// </summary>
+    [HttpDelete("holds/{holdId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> CancelHold(
+        [FromRoute] Guid holdId,
+        [FromHeader(Name = "X-Student-Id")] string? studentId,
+        CancellationToken cancellationToken)
+    {
+        if (!IsValidStudentId(studentId))
+            return InvalidStudentIdResult();
+
+        await _holdService.CancelHoldAsync(holdId, studentId!, cancellationToken);
+        return NoContent();
+    }
+
+    // -------------------------------------------------------------------------
+    // GET /me/holds
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Returns all admission applications belonging to the requesting student.
+    /// Any expired HELD records are automatically transitioned to EXPIRED before the response is returned.
+    /// </summary>
+    [HttpGet("me/holds")]
+    [ProducesResponseType(typeof(IEnumerable<StudentApplicationDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetMyApplications(
+        [FromHeader(Name = "X-Student-Id")] string? studentId,
+        CancellationToken cancellationToken)
+    {
+        if (!IsValidStudentId(studentId))
+            return InvalidStudentIdResult();
+
+        var applications = await _holdService.GetStudentApplicationsAsync(studentId!, cancellationToken);
+        return Ok(applications);
     }
 }
