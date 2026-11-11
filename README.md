@@ -14,17 +14,20 @@ Separate installations of Node.js, .NET SDK, and PostgreSQL are not required on 
 ## 3. Project Setup
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/md-musa/school-admission-system.git
    ```
 
 2. Navigate to the project directory:
+
    ```bash
    cd school-admission-system
    ```
 
 3. (Optional) Configure environment variables:
    Default configuration values are already provided in `docker-compose.yml`, so creating a `.env` file is optional. If you wish to customize credentials or hold duration, copy the template:
+
    ```bash
    cp .env.example .env
    ```
@@ -54,22 +57,4 @@ To stop the application and completely reset the database by removing the persis
 
 ```bash
 docker compose down -v
-```
-
-## 6. Running Tests
-
-The backend automated test suite covers class creation, hold creation, duplicate application prevention, and concurrent seat allocation.
-
-### Test Database Setup
-The integration tests connect to a PostgreSQL database instance using the connection string configured in `backend/appsettings.Development.json`. You can start the database container using Docker:
-
-```bash
-docker compose up -d db
-```
-
-### Run Test Command
-To execute the backend automated tests, run:
-
-```bash
-dotnet test tests/SchoolAdmissionAPI.Tests/SchoolAdmissionAPI.Tests.csproj
 ```
