@@ -75,3 +75,42 @@ Accept: application/json
 ### 12. Get Non-existent Hold (404 Not Found)
 GET {{baseUrl}}/holds/ffffffff-ffff-ffff-ffff-ffffffffffff
 Accept: application/json
+
+### ===========================================================================
+### Phase 4: Hold Lifecycle Endpoints
+### ===========================================================================
+
+### 13. Confirm a Hold (POST /holds/{holdId}/confirm -> 200 OK)
+# Replace {holdId} with the UUID returned from step 7
+POST {{baseUrl}}/holds/00000000-0000-0000-0000-000000000000/confirm
+X-Student-Id: 20152691234567890
+
+### 14. Confirm a Hold (Missing X-Student-Id -> 400 Bad Request)
+POST {{baseUrl}}/holds/00000000-0000-0000-0000-000000000000/confirm
+
+### 15. Confirm an Expired Hold (409 Conflict)
+POST {{baseUrl}}/holds/00000000-0000-0000-0000-000000000000/confirm
+X-Student-Id: 20152691234567890
+
+### 16. Cancel a Hold (DELETE /holds/{holdId} -> 204 No Content)
+# Replace {holdId} with the UUID returned from step 7
+DELETE {{baseUrl}}/holds/00000000-0000-0000-0000-000000000000
+X-Student-Id: 20152691234567890
+
+### 17. Cancel a Confirmed Hold (409 Conflict)
+DELETE {{baseUrl}}/holds/00000000-0000-0000-0000-000000000000
+X-Student-Id: 20152691234567890
+
+### 18. Get My Applications (GET /me/holds -> 200 OK)
+GET {{baseUrl}}/me/holds
+X-Student-Id: 20152691234567890
+Accept: application/json
+
+### 19. Get My Applications (Missing X-Student-Id -> 400 Bad Request)
+GET {{baseUrl}}/me/holds
+Accept: application/json
+
+### 20. Get My Applications (Unknown student -> 200 OK with empty array)
+GET {{baseUrl}}/me/holds
+X-Student-Id: 99999999999999999
+Accept: application/json
