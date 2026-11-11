@@ -165,9 +165,9 @@ export default function MyApplicationsPage() {
       {!isValid && (
         <div className="flex flex-col items-center justify-center py-12 text-center border rounded-xl border-dashed p-8 bg-muted/10 max-w-xl mx-auto">
           <IdCard className="mb-4 text-primary size-12" />
-          <h2 className="mb-1 text-lg font-semibold">Enter Your 17-Digit Registration Number</h2>
+          <h2 className="mb-1 text-lg font-semibold">Enter Your Student ID</h2>
           <p className="mb-6 max-w-md text-sm text-muted-foreground">
-            No login is required. Enter your 17-digit registration number to view and manage all your admission applications.
+            Enter your 17-digit birth registration number to view your applications.
           </p>
 
           <form onSubmit={handleSetLocalId} className="w-full flex flex-col sm:flex-row gap-2 max-w-sm mb-4">
@@ -175,7 +175,7 @@ export default function MyApplicationsPage() {
               type="text"
               inputMode="numeric"
               maxLength={17}
-              placeholder="17-Digit Registration Number"
+              placeholder="17-Digit Student ID"
               value={localInput}
               onChange={(e) => setLocalInput(e.target.value.replace(/\D/g, "").slice(0, 17))}
               className="font-mono text-center sm:text-left text-sm"

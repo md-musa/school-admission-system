@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { validateStudentId } from "@/lib/studentId"
 import { useStudent } from "@/context/StudentContext"
 import { useCreateHold } from "@/hooks/useCreateHold"
-import { AlertCircle, Clock, Loader2, Sparkles } from "lucide-react"
+import { AlertCircle, Clock, Loader2, GraduationCap } from "lucide-react"
 
 interface AdmissionApplicationFormProps {
   isOpen: boolean
@@ -77,27 +77,26 @@ export function AdmissionApplicationForm({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 text-primary mb-1">
-            <Sparkles className="size-5" />
+            <GraduationCap className="size-5" />
             <DialogTitle>Apply for Admission</DialogTitle>
           </div>
           <DialogDescription>
-            Reserving a temporary seat hold for{" "}
-            <span className="font-semibold text-foreground">{classNameTitle}</span>.
+            Apply for <span className="font-semibold text-foreground">{classNameTitle}</span>.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 py-2">
-          <div className="rounded-lg bg-muted/70 p-3 text-xs text-muted-foreground flex items-start gap-2 border border-border/50">
+          <div className="rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground flex items-start gap-2 border border-border">
             <Clock className="size-4 shrink-0 mt-0.5 text-primary" />
             <span>
-              Once submitted, a temporary seat hold will be placed. You will need to click <strong>&quot;Pay Admission Fee&quot;</strong> before the timer expires to confirm your seat.
+              A 10-minute hold will reserve your seat while you complete your admission fee.
             </span>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="formStudentId" className="text-xs font-semibold">
-                Student Registration Number (17 Digits)
+                Student ID (17 digits)
               </Label>
               <span className="text-[11px] text-muted-foreground font-mono">
                 {studentId.length}/17
@@ -123,7 +122,7 @@ export function AdmissionApplicationForm({
               </p>
             ) : (
               <p className="text-[11px] text-muted-foreground">
-                No login required. This 17-digit registration number serves as your identity.
+                Enter your 17-digit birth registration number.
               </p>
             )}
           </div>

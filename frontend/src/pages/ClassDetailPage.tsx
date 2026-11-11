@@ -8,6 +8,7 @@ import {
   Clock,
   AlertCircle,
   RefreshCw,
+  Send,
 } from "lucide-react"
 import { useClassDetails } from "@/hooks/useClassDetails"
 import { ClassAvailabilityBadge } from "@/components/classes/ClassAvailabilityBadge"
@@ -324,7 +325,14 @@ export default function ClassDetailPage() {
                       : "Apply for admission to this class"
                   }
                 >
-                  {isFull ? "Class Full" : "Apply Now"}
+                  {isFull ? (
+                    "Class Full"
+                  ) : (
+                    <>
+                      <Send className="size-3.5" />
+                      <span>Apply Now</span>
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </Card>

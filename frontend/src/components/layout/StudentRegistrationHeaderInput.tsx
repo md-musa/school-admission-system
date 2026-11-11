@@ -20,10 +20,10 @@ export function StudentRegistrationHeaderInput() {
           inputMode="numeric"
           pattern="[0-9]*"
           maxLength={17}
-          placeholder="17-Digit Registration No."
+          placeholder="Student ID (17 digits)"
           value={studentId}
           onChange={handleChange}
-          aria-label="Student 17-digit Registration Number"
+          aria-label="Student ID"
           className="h-9 w-52 sm:w-64 pl-8 pr-16 text-xs font-mono font-medium bg-background/80 placeholder:font-sans placeholder:text-muted-foreground/70 focus-visible:ring-primary"
         />
 

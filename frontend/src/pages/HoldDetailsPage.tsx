@@ -185,10 +185,10 @@ export default function HoldDetailsPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
                   <Clock className="size-5 text-primary" />
-                  <CardTitle className="text-base">Seat Temporarily Reserved</CardTitle>
+                  <CardTitle className="text-base">Seat Reserved</CardTitle>
                 </div>
                 <CardDescription className="text-xs leading-relaxed">
-                  Your seat is currently held. Click &quot;Pay Admission Fee&quot; before the timer expires to confirm your admission (payment is simulated), or click &quot;Cancel&quot; if you wish to release your seat.
+                  Your seat is temporarily reserved. Complete the payment before the timer expires to confirm your admission.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-2 flex flex-col sm:flex-row items-center gap-3">

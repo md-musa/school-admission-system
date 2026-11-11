@@ -11,19 +11,6 @@ interface CancelHoldVariables {
   studentId?: string
 }
 
-/**
- * Mutation hook for cancelling an admission hold.
- *
- * Requirements:
- * - Prevents duplicate submissions while pending.
- * - Resolves studentId from input or localStorage.
- * - On success, invalidates:
- *   - ['holds', holdId]
- *   - ['holds', 'me', studentId]
- *   - ['classes', classId] (if classId provided)
- *   - ['classes'] (all classes listing)
- * - Shows toast notifications via Sonner.
- */
 export function useCancelHold() {
   const queryClient = useQueryClient()
 

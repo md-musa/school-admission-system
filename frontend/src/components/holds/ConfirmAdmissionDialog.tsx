@@ -7,7 +7,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { CreditCard, CheckCircle2, Loader2, Sparkles } from "lucide-react"
+import { CreditCard, CheckCircle2, Loader2 } from "lucide-react"
 
 interface ConfirmAdmissionDialogProps {
   isOpen: boolean
@@ -41,16 +41,11 @@ export function ConfirmAdmissionDialog({
         </DialogHeader>
 
         <div className="space-y-3 py-2 text-sm">
-          <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3.5 text-xs text-foreground flex items-start gap-2.5">
-            <Sparkles className="size-4 shrink-0 mt-0.5 text-green-600 dark:text-green-400" />
-            <div className="space-y-1">
-              <p className="font-semibold text-green-700 dark:text-green-400">
-                Simulated Payment:
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Clicking &quot;Pay Admission Fee&quot; assumes that the payment is successful. No real payment gateway integration is required. Your admission seat will be permanently confirmed.
-              </p>
-            </div>
+          <div className="rounded-lg bg-muted/60 border border-border p-3 text-xs text-muted-foreground flex items-start gap-2.5">
+            <CreditCard className="size-4 shrink-0 mt-0.5 text-primary" />
+            <p className="leading-relaxed">
+              Payment is simulated for this demo. Confirming will finalize your admission and secure your seat permanently.
+            </p>
           </div>
         </div>
 

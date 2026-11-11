@@ -36,11 +36,11 @@ function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
       <BookOpen className="mb-4 text-muted-foreground size-12" />
       <h2 className="mb-1 text-lg font-semibold">No Classes Available</h2>
       <p className="max-w-md text-sm text-muted-foreground mb-4">
-        There are currently no admission classes listed. School admins can create new classes and shifts below.
+        No admission classes have been created yet. Click below to add one.
       </p>
       <Button onClick={onCreateClick} className="gap-2">
         <PlusCircle className="size-4" />
-        Create Class (School Admin)
+        Create Class
       </Button>
     </div>
   )
@@ -83,7 +83,7 @@ export default function ClassesPage() {
             Available Classes
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Browse open classes, view real-time seat capacities, and click &quot;Apply Now&quot; to reserve a seat.
+            Select a class to check seat availability and apply.
           </p>
         </div>
 
@@ -92,7 +92,7 @@ export default function ClassesPage() {
           className="gap-2 shrink-0 self-start sm:self-auto"
         >
           <PlusCircle className="size-4" />
-          <span>+ Create Class (Admin)</span>
+          <span>Create Class</span>
         </Button>
       </div>
 

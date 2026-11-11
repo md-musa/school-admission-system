@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useCreateClass } from "@/hooks/useCreateClass"
-import { PlusCircle, Loader2, Sparkles, AlertCircle } from "lucide-react"
+import { PlusCircle, Loader2, AlertCircle } from "lucide-react"
 
 interface CreateClassDialogProps {
   isOpen: boolean
@@ -70,28 +70,17 @@ export function CreateClassDialog({ isOpen, onClose }: CreateClassDialogProps) {
         <DialogHeader>
           <div className="flex items-center gap-2 text-primary">
             <PlusCircle className="size-5" />
-            <DialogTitle className="text-lg">Create Class (School Admin)</DialogTitle>
+            <DialogTitle className="text-lg">Create Class</DialogTitle>
           </div>
           <DialogDescription className="text-xs">
-            Create a new admission class or shift. Each shift has its own separate seat capacity.
+            Add a new class or shift with its seat capacity.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 py-2">
-          {/* Multiple Shifts Guidance Banner */}
-          <div className="rounded-lg bg-primary/10 border border-primary/20 p-3 text-xs text-foreground/90 space-y-1">
-            <p className="font-semibold flex items-center gap-1.5 text-primary">
-              <Sparkles className="size-3.5" />
-              Multiple Shifts per Class:
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              A single class can have multiple shifts. Each shift is created as a separate class option in the system with its own independent seat capacity (e.g. <span className="font-semibold text-foreground">&quot;Class 6 – Morning Shift&quot;</span> and <span className="font-semibold text-foreground">&quot;Class 6 – Day Shift&quot;</span>).
-            </p>
-          </div>
-
           {/* Quick Preset Buttons */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Quick Shift Presets:</Label>
+            <Label className="text-xs text-muted-foreground">Suggestions:</Label>
             <div className="flex flex-wrap gap-1.5">
               {PRESET_SHIFTS.map((preset) => (
                 <button

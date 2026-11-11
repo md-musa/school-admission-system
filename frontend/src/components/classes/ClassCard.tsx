@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { GraduationCap, ArrowRight, Sparkles } from "lucide-react"
+import { GraduationCap, ArrowRight, Send } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -43,9 +43,6 @@ export function ClassCard({ cls }: ClassCardProps) {
               />
               <div>
                 <CardTitle className="text-base leading-snug">{cls.name}</CardTitle>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Independent Shift &amp; Capacity
-                </p>
               </div>
             </div>
             <ClassStatusBadge
@@ -67,7 +64,7 @@ export function ClassCard({ cls }: ClassCardProps) {
         <CardFooter className="pt-0 flex flex-col gap-2">
           {/* Primary Action: "Apply Now" Button */}
           <Button
-            className="w-full gap-1.5"
+            className="w-full gap-2"
             variant={isFull ? "outline" : "default"}
             disabled={isFull}
             onClick={() => setIsApplyOpen(true)}
@@ -81,7 +78,7 @@ export function ClassCard({ cls }: ClassCardProps) {
               "Class Full"
             ) : (
               <>
-                <Sparkles className="size-4" />
+                <Send className="size-3.5" />
                 <span>Apply Now</span>
               </>
             )}
