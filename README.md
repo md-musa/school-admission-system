@@ -34,7 +34,7 @@ A concurrency-safe, first-come-first-served school admission seat reservation sy
    cd backend
    dotnet run
    ```
-   The API starts on `http://localhost:5076` (or the port shown in the console).
+   The API starts on `http://localhost:8080` (or the port shown in the console).
 
 ---
 
@@ -74,8 +74,7 @@ The API will be available at **http://localhost:8080**.
 All endpoints return JSON. All `X-Student-Id` headers must contain **exactly 17 numeric digits**.
 
 ### Base URL
-- Local: `http://localhost:5076`
-- Docker: `http://localhost:8080`
+- `http://localhost:8080`
 
 ---
 
