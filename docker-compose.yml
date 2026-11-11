@@ -1,23 +1,33 @@
 services:
+
+  # ===========================================================================
+  # PostgreSQL Database
+  # ===========================================================================
   db:
     image: postgres:16-alpine
     container_name: school_admission_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: school_admission_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-school_admission_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d school_admission_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-school_admission_db}"]
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - school_net
 
-  api:
+  # ===========================================================================
+  # ASP.NET Core Backend API
+  # EF Core migrations are applied automatically at startup (Program.cs).
+  # ===========================================================================
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -27,12 +37,44 @@ services:
       - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=school_admission_db;Username=postgres;Password=postgres
-      - AdmissionSettings__HoldDurationSeconds=600
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${POSTGRES_DB:-school_admission_db};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      - AdmissionSettings__HoldDurationSeconds=${HOLD_DURATION_SECONDS:-600}
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - school_net
 
+  # ===========================================================================
+  # React + Nginx Frontend
+  # VITE_API_BASE_URL is baked into the bundle at image-build time.
+  # Browsers connect to http://localhost:8080 — NOT the Docker service name.
+  # ===========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+    container_name: school_admission_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - school_net
+
+# =============================================================================
+# Shared network
+# =============================================================================
+networks:
+  school_net:
+    driver: bridge
+
+# =============================================================================
+# Named volume for PostgreSQL data persistence
+# =============================================================================
 volumes:
   pgdata:
     driver: local
