@@ -1,5 +1,5 @@
 import apiClient from "@/api/axios"
-import { HOLDS_CREATE, HOLDS_DETAIL, ME_HOLDS } from "@/api/endpoints"
+import { HOLDS_CREATE, HOLDS_DETAIL, HOLDS_CONFIRM, ME_HOLDS } from "@/api/endpoints"
 
 export type HoldStatus = "HELD" | "CONFIRMED" | "CANCELLED" | "EXPIRED"
 
@@ -9,6 +9,11 @@ export interface HoldResponse {
   studentId: string
   status: HoldStatus
   expiresAt: string
+}
+
+export interface ConfirmHoldResponse {
+  holdId: string
+  status: "CONFIRMED"
 }
 
 export interface StudentApplicationItem {
@@ -42,6 +47,22 @@ export async function createHold(
  */
 export async function getHoldById(holdId: string): Promise<HoldResponse> {
   const response = await apiClient.get<HoldResponse>(HOLDS_DETAIL(holdId))
+  return response.data
+}
+
+/**
+ * Confirms an admission hold for the given student.
+ * Sends POST /holds/{holdId}/confirm with X-Student-Id header and no body.
+ */
+export async function confirmHold(
+  holdId: string,
+  studentId: string
+): Promise<ConfirmHoldResponse> {
+  const response = await apiClient.post<ConfirmHoldResponse>(
+    HOLDS_CONFIRM(holdId),
+    null,
+    { headers: { "X-Student-Id": studentId } }
+  )
   return response.data
 }
 

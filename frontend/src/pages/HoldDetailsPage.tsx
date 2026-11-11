@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import {
   ArrowLeft,
@@ -6,12 +7,13 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
-  Info,
 } from "lucide-react"
 import { useHoldDetails } from "@/hooks/useHoldDetails"
 import { useClassDetails } from "@/hooks/useClassDetails"
+import { useConfirmHold } from "@/hooks/useConfirmHold"
 import { HoldCountdown } from "@/components/holds/HoldCountdown"
 import { HoldSummary } from "@/components/holds/HoldSummary"
+import { ConfirmAdmissionDialog } from "@/components/holds/ConfirmAdmissionDialog"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -96,8 +98,27 @@ export default function HoldDetailsPage() {
   } = useHoldDetails(holdId)
 
   const { data: cls } = useClassDetails(hold?.classId)
+  const { mutate: confirmAdmission, isPending: isConfirming } = useConfirmHold()
+
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
   const apiError = holdError as unknown as ApiError | null
+
+  const handleConfirmSubmit = () => {
+    if (!hold) return
+    confirmAdmission(
+      {
+        holdId: hold.holdId,
+        classId: hold.classId,
+        studentId: hold.studentId,
+      },
+      {
+        onSuccess: () => {
+          setIsConfirmDialogOpen(false)
+        },
+      }
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -150,13 +171,14 @@ export default function HoldDetailsPage() {
                     Your seat is held. Please confirm your admission before the timer expires to secure your enrollment.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-2">
-                  <div className="rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground flex items-start gap-2">
-                    <Info className="size-4 shrink-0 text-muted-foreground mt-0.5" />
-                    <span>
-                      Confirmation &amp; payment feature will be available in the upcoming step. Once confirmed, your seat reservation will be permanently locked.
-                    </span>
-                  </div>
+                <CardContent className="pt-2 space-y-4">
+                  <Button
+                    onClick={() => setIsConfirmDialogOpen(true)}
+                    className="w-full sm:w-auto gap-2"
+                  >
+                    <CheckCircle2 className="size-4" />
+                    Confirm Admission
+                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -174,6 +196,11 @@ export default function HoldDetailsPage() {
                     Congratulations! Your admission seat has been officially confirmed.
                   </CardDescription>
                 </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground">
+                    Your seat is permanently reserved in {cls?.name || "the selected class"}.
+                  </p>
+                </CardContent>
               </Card>
             )}
 
@@ -227,6 +254,15 @@ export default function HoldDetailsPage() {
 
             {/* Hold Summary Card */}
             <HoldSummary hold={hold} classNameTitle={cls?.name} />
+
+            {/* Confirmation Dialog */}
+            <ConfirmAdmissionDialog
+              isOpen={isConfirmDialogOpen}
+              onClose={() => setIsConfirmDialogOpen(false)}
+              onConfirm={handleConfirmSubmit}
+              isPending={isConfirming}
+              classNameTitle={cls?.name}
+            />
           </div>
         )}
       </div>
