@@ -74,8 +74,8 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 // CORS must come before controllers
 app.UseCors("FrontendDev");
 
-// Only enforce HTTPS redirection in non-development environments
-if (!app.Environment.IsDevelopment())
+// Only enforce HTTPS redirection when explicitly enabled (disabled by default in containerized/HTTP setups)
+if (!app.Environment.IsDevelopment() && app.Configuration.GetValue<bool>("EnableHttpsRedirection", false))
 {
     app.UseHttpsRedirection();
 }
