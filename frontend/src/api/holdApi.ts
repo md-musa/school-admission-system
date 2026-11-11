@@ -1,20 +1,18 @@
 import apiClient from "@/api/axios"
-import { HOLDS_CREATE } from "@/api/endpoints"
+import { HOLDS_CREATE, HOLDS_DETAIL } from "@/api/endpoints"
+
+export type HoldStatus = "HELD" | "CONFIRMED" | "CANCELLED" | "EXPIRED"
 
 export interface HoldResponse {
   holdId: string
   classId: string
   studentId: string
-  status: "HELD" | "CONFIRMED" | "CANCELLED"
+  status: HoldStatus
   expiresAt: string
 }
 
 /**
  * Creates a seat hold for the given class on behalf of a student.
- *
- * The X-Student-Id header is set explicitly here (in addition to the
- * request interceptor) to guarantee it is present even before localStorage
- * is updated by the caller.
  */
 export async function createHold(
   classId: string,
@@ -25,5 +23,14 @@ export async function createHold(
     {}, // empty body as required by the API
     { headers: { "X-Student-Id": studentId } }
   )
+  return response.data
+}
+
+/**
+ * Fetches admission hold details by ID.
+ * Returns response data directly, errors processed by Axios interceptor.
+ */
+export async function getHoldById(holdId: string): Promise<HoldResponse> {
+  const response = await apiClient.get<HoldResponse>(HOLDS_DETAIL(holdId))
   return response.data
 }

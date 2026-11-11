@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom"
 import ClassesPage from "@/pages/ClassesPage"
 import ClassDetailPage from "@/pages/ClassDetailPage"
-import HoldDetailPage from "@/pages/HoldDetailPage"
+import HoldDetailsPage from "@/pages/HoldDetailsPage"
 
 const router = createBrowserRouter([
   {
@@ -14,7 +14,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/holds/:holdId",
-    element: <HoldDetailPage />,
+    element: <HoldDetailsPage />,
   },
 ])
 
