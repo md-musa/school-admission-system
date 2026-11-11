@@ -240,6 +240,12 @@ public class AdmissionHoldService : IAdmissionHoldService
                 throw new ConflictException("A cancelled hold cannot be confirmed.");
             }
 
+            if (hold.Status == AdmissionHoldStatus.EXPIRED)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw new ConflictException("The hold has expired and the seat has been released. Please create a new hold.");
+            }
+
             // Detect expiration (even if still stored as HELD)
             if (hold.Status == AdmissionHoldStatus.HELD && hold.ExpiresAt <= now)
             {
@@ -303,8 +309,8 @@ public class AdmissionHoldService : IAdmissionHoldService
                     "Please contact the admission office.");
             }
 
-            // Idempotent: already cancelled → succeed silently
-            if (hold.Status == AdmissionHoldStatus.CANCELLED)
+            // Idempotent: already cancelled or expired → succeed silently
+            if (hold.Status == AdmissionHoldStatus.CANCELLED || hold.Status == AdmissionHoldStatus.EXPIRED)
             {
                 await transaction.RollbackAsync(cancellationToken);
                 return;

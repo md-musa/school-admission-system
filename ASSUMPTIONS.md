@@ -1,6 +1,6 @@
-# Assumptions
+**Concurrency:** I used PostgreSQL row-level locking with SELECT FOR UPDATE to prevent overbooking. Both backend processes use the same database. Only one process can lock a class row at a time. The second process must wait until the first process finishes. Then it checks the updated seat count before creating a hold. This ensures that the total number of HELD and CONFIRMED applications never exceeds totalSeats..
 
-1. **Concurrency:** I used PostgreSQL row-level locking with `SELECT FOR UPDATE` to prevent overbooking. When two backend processes use the same database, only one process can lock a class row at a time during seat allocation. The second process waits until the lock is released and then checks the updated seat count. This ensures that HELD + CONFIRMED applications never exceed `totalSeats`.
+# Assumptions
 
 2. **Student ID:** A student ID must contain exactly 17 numeric digits. I store it as a string instead of a number.
 

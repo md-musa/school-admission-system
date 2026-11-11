@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolAdmissionAPI.DTOs;
 using SchoolAdmissionAPI.Services;
 
+
 [ApiController]
 [Route("classes")]
 [Produces("application/json")]
@@ -18,6 +19,12 @@ public class ClassesController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>
+    /// Creates a new admission class option (e.g. "Class 6 - Morning Shift").
+    /// </summary>
+    /// <param name="request">Class name and total seat capacity.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    /// <returns>HTTP 201 Created with the newly created class object.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(ClassResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -38,6 +45,11 @@ public class ClassesController : ControllerBase
             createdClass);
     }
 
+    /// <summary>
+    /// Retrieves all admission classes with dynamic real-time seat availability.
+    /// </summary>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    /// <returns>HTTP 200 OK with list of all admission classes.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<ClassResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllClasses(CancellationToken cancellationToken)
@@ -46,6 +58,12 @@ public class ClassesController : ControllerBase
         return Ok(classes);
     }
 
+    /// <summary>
+    /// Retrieves a single admission class by ID with real-time seat availability.
+    /// </summary>
+    /// <param name="classId">Unique UUID of the admission class.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    /// <returns>HTTP 200 OK if found, or HTTP 404 Not Found if the class does not exist.</returns>
     [HttpGet("{classId:guid}")]
     [ProducesResponseType(typeof(ClassResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
