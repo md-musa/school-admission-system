@@ -25,7 +25,6 @@ export function HoldSummary({ hold, classNameTitle }: HoldSummaryProps) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  // Format local expiry date/time
   const formattedExpiry = new Date(hold.expiresAt).toLocaleString(undefined, {
     dateStyle: "medium",
     timeStyle: "medium",

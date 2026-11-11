@@ -11,19 +11,6 @@ interface ConfirmHoldVariables {
   studentId?: string
 }
 
-/**
- * Mutation hook for confirming an admission hold.
- *
- * Requirements:
- * - Prevents duplicate submissions while pending.
- * - Resolves studentId from input or localStorage.
- * - On success, invalidates:
- *   - ['holds', holdId]
- *   - ['holds', 'me', studentId]
- *   - ['classes', classId] (if classId provided)
- *   - ['classes'] (all classes listing)
- * - Shows toast notifications via Sonner.
- */
 export function useConfirmHold() {
   const queryClient = useQueryClient()
 
@@ -43,26 +30,22 @@ export function useConfirmHold() {
     onSuccess: (_data, variables) => {
       const activeStudentId = variables.studentId || getStudentId()
 
-      // Invalidate the specific hold detail query
       void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.holds.detail(variables.holdId),
       })
 
-      // Invalidate the student's applications list
       if (activeStudentId) {
         void queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.holds.me(activeStudentId),
         })
       }
 
-      // Invalidate class details if classId provided
       if (variables.classId) {
         void queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.classes.detail(variables.classId),
         })
       }
 
-      // Invalidate class listing
       void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.classes.all,
       })

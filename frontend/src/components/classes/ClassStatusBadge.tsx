@@ -9,7 +9,6 @@ type Status = "available" | "almost-full" | "full"
 
 function getStatus(availableSeats: number, totalSeats: number): Status {
   if (availableSeats <= 0) return "full"
-  // "Almost full" = less than 20% remaining
   if (availableSeats / totalSeats < 0.2) return "almost-full"
   return "available"
 }

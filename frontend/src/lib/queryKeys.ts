@@ -1,4 +1,3 @@
-/** Centralized query key registry — import keys from here, never inline them. */
 export const QUERY_KEYS = {
   classes: {
     all: ["classes"] as const,

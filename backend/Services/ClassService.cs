@@ -23,7 +23,6 @@ public class ClassService : IClassService
     /// <inheritdoc />
     public async Task<ClassResponseDto> CreateClassAsync(CreateClassRequestDto request, CancellationToken cancellationToken = default)
     {
-        // 1. Business validation
         if (string.IsNullOrWhiteSpace(request.Name))
         {
             throw new ArgumentException("Class name cannot be empty or whitespace.", nameof(request.Name));
@@ -40,7 +39,6 @@ public class ClassService : IClassService
             throw new ArgumentException("TotalSeats must be greater than zero.", nameof(request.TotalSeats));
         }
 
-        // 2. Instantiate entity using UTC timestamps
         var now = DateTime.UtcNow;
         var admissionClass = new AdmissionClass
         {
@@ -51,14 +49,12 @@ public class ClassService : IClassService
             UpdatedAt = now
         };
 
-        // 3. Persist to PostgreSQL
         _context.AdmissionClasses.Add(admissionClass);
         await _context.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Created new admission class '{Name}' (ID: {ClassId}, TotalSeats: {Seats})",
             admissionClass.Name, admissionClass.Id, admissionClass.TotalSeats);
 
-        // 4. Return response DTO (newly created class has no holds or confirmations)
         return new ClassResponseDto
         {
             Id = admissionClass.Id,
@@ -87,11 +83,8 @@ public class ClassService : IClassService
                 Id = c.Id,
                 Name = c.Name,
                 TotalSeats = c.TotalSeats,
-                // Count of active holds: Status is HELD and ExpiresAt is in the future
                 HeldSeats = c.Holds.Count(h => h.Status == AdmissionHoldStatus.HELD && h.ExpiresAt > now),
-                // Count of confirmed admissions: Status is CONFIRMED
                 ConfirmedSeats = c.Holds.Count(h => h.Status == AdmissionHoldStatus.CONFIRMED),
-                // Available seats formula: TotalSeats - HeldSeats - ConfirmedSeats
                 AvailableSeats = c.TotalSeats - (
                     c.Holds.Count(h => h.Status == AdmissionHoldStatus.HELD && h.ExpiresAt > now) +
                     c.Holds.Count(h => h.Status == AdmissionHoldStatus.CONFIRMED)

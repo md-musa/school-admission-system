@@ -41,7 +41,6 @@ public class AdmissionHoldService : IAdmissionHoldService
         string studentId,
         CancellationToken cancellationToken = default)
     {
-        // 1. Validate student ID format
         if (string.IsNullOrWhiteSpace(studentId) || !StudentIdRegex.IsMatch(studentId))
         {
             throw new ArgumentException(
@@ -51,20 +50,18 @@ public class AdmissionHoldService : IAdmissionHoldService
 
         var holdDurationSeconds = _settings.HoldDurationSeconds > 0 ? _settings.HoldDurationSeconds : 600;
 
-        // 2. Begin database transaction
         await using var transaction = await _context.Database.BeginTransactionAsync(
             IsolationLevel.ReadCommitted,
             cancellationToken);
 
         try
         {
-            // 3. Lock the selected AdmissionClass row using SELECT ... FOR UPDATE
+            // Lock the selected AdmissionClass row using SELECT ... FOR UPDATE
             var admissionClass = (await _context.AdmissionClasses
                 .FromSqlInterpolated($"SELECT * FROM \"AdmissionClasses\" WHERE \"Id\" = {classId} FOR UPDATE")
                 .ToListAsync(cancellationToken))
                 .FirstOrDefault();
 
-            // 4. Verify that the class exists
             if (admissionClass == null)
             {
                 await transaction.RollbackAsync(cancellationToken);
@@ -73,7 +70,7 @@ public class AdmissionHoldService : IAdmissionHoldService
 
             var now = DateTime.UtcNow;
 
-            // 5. Expire stale HELD records for the selected class AND for the requesting student across all classes
+            // Expire stale HELD records for the selected class and for the requesting student across all classes
             var staleHolds = await _context.AdmissionHolds
                 .Where(h => (h.ClassId == classId || h.StudentId == studentId)
                             && h.Status == AdmissionHoldStatus.HELD
@@ -92,7 +89,6 @@ public class AdmissionHoldService : IAdmissionHoldService
                     staleHolds.Count, classId, studentId);
             }
 
-            // 6. Check whether the student has an existing active application
             var hasActiveApplication = await _context.AdmissionHolds
                 .AnyAsync(h => h.StudentId == studentId
                             && (h.Status == AdmissionHoldStatus.HELD || h.Status == AdmissionHoldStatus.CONFIRMED),
@@ -104,7 +100,6 @@ public class AdmissionHoldService : IAdmissionHoldService
                 throw new ConflictException("Student already has an active application.");
             }
 
-            // 7. Count active HELD and CONFIRMED records for the selected class
             var heldSeats = await _context.AdmissionHolds
                 .CountAsync(h => h.ClassId == classId
                               && h.Status == AdmissionHoldStatus.HELD
@@ -116,17 +111,15 @@ public class AdmissionHoldService : IAdmissionHoldService
                               && h.Status == AdmissionHoldStatus.CONFIRMED,
                             cancellationToken);
 
-            // 8. Calculate availableSeats = totalSeats - heldSeats - confirmedSeats
+            // Seat allocation: availableSeats = totalSeats - heldSeats - confirmedSeats
             var availableSeats = admissionClass.TotalSeats - heldSeats - confirmedSeats;
 
-            // 9. If no seats are available, return HTTP 409 Conflict
             if (availableSeats <= 0)
             {
                 await transaction.RollbackAsync(cancellationToken);
                 throw new ConflictException("No available seats in the selected class.");
             }
 
-            // 10. Insert a new AdmissionHold with status HELD
             var expiresAt = now.AddSeconds(holdDurationSeconds);
             var newHold = new AdmissionHold
             {
@@ -143,7 +136,6 @@ public class AdmissionHoldService : IAdmissionHoldService
             _context.AdmissionHolds.Add(newHold);
             await _context.SaveChangesAsync(cancellationToken);
 
-            // 11. Commit the transaction
             await transaction.CommitAsync(cancellationToken);
 
             _logger.LogInformation(
@@ -227,7 +219,6 @@ public class AdmissionHoldService : IAdmissionHoldService
                 throw new NotFoundException($"Admission hold with ID '{holdId}' was not found.");
             }
 
-            // Ownership check — prevents a student from confirming another student's hold
             if (hold.StudentId != studentId)
             {
                 await transaction.RollbackAsync(cancellationToken);
@@ -243,7 +234,6 @@ public class AdmissionHoldService : IAdmissionHoldService
                 return new ConfirmHoldResponseDto { HoldId = hold.Id, Status = "CONFIRMED" };
             }
 
-            // Reject CANCELLED holds
             if (hold.Status == AdmissionHoldStatus.CANCELLED)
             {
                 await transaction.RollbackAsync(cancellationToken);
@@ -260,7 +250,6 @@ public class AdmissionHoldService : IAdmissionHoldService
                 throw new ConflictException("The hold has expired and the seat has been released. Please create a new hold.");
             }
 
-            // All checks passed — confirm the hold
             hold.Status = AdmissionHoldStatus.CONFIRMED;
             hold.ConfirmedAt = now;
             await _context.SaveChangesAsync(cancellationToken);
@@ -288,7 +277,7 @@ public class AdmissionHoldService : IAdmissionHoldService
 
         try
         {
-            // Lock the hold row
+            // Lock the hold row using SELECT ... FOR UPDATE
             var hold = (await _context.AdmissionHolds
                 .FromSqlInterpolated($"SELECT * FROM \"AdmissionHolds\" WHERE \"Id\" = {holdId} FOR UPDATE")
                 .ToListAsync(cancellationToken))
@@ -300,14 +289,12 @@ public class AdmissionHoldService : IAdmissionHoldService
                 throw new NotFoundException($"Admission hold with ID '{holdId}' was not found.");
             }
 
-            // Ownership check
             if (hold.StudentId != studentId)
             {
                 await transaction.RollbackAsync(cancellationToken);
                 throw new NotFoundException($"Admission hold with ID '{holdId}' was not found.");
             }
 
-            // Reject cancellation of a confirmed admission
             if (hold.Status == AdmissionHoldStatus.CONFIRMED)
             {
                 await transaction.RollbackAsync(cancellationToken);
@@ -327,8 +314,6 @@ public class AdmissionHoldService : IAdmissionHoldService
             var now = DateTime.UtcNow;
             if (hold.Status == AdmissionHoldStatus.HELD && hold.ExpiresAt <= now)
             {
-                // Treat as expired — update to EXPIRED and return success without releasing a seat
-                // (the seat was never occupied since the hold expired)
                 hold.Status = AdmissionHoldStatus.EXPIRED;
                 await _context.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -336,7 +321,6 @@ public class AdmissionHoldService : IAdmissionHoldService
                 return;
             }
 
-            // Cancel the HELD record
             hold.Status = AdmissionHoldStatus.CANCELLED;
             hold.CancelledAt = now;
             await _context.SaveChangesAsync(cancellationToken);
@@ -377,7 +361,6 @@ public class AdmissionHoldService : IAdmissionHoldService
                 staleHolds.Count, studentId);
         }
 
-        // Fetch all holds with class name via a join
         var applications = await _context.AdmissionHolds
             .AsNoTracking()
             .Where(h => h.StudentId == studentId)

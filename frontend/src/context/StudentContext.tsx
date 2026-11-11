@@ -31,7 +31,6 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
           persistStudentId(cleaned)
           void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.holds.me(cleaned) })
         } catch {
-          // ignore
         }
       } else if (cleaned.length === 0) {
         removeStudentId()

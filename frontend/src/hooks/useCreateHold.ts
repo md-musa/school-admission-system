@@ -11,18 +11,6 @@ interface CreateHoldVariables {
   studentId: string
 }
 
-/**
- * Mutation hook for creating an admission hold.
- *
- * On success:
- *  - Saves the student ID to localStorage.
- *  - Invalidates class queries so seat counts refresh.
- *  - Shows a success toast.
- *  - Navigates to /holds/{holdId}.
- *
- * On error:
- *  - Surfaces the normalised ApiError message via Sonner.
- */
 export function useCreateHold() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -31,10 +19,8 @@ export function useCreateHold() {
     mutationFn: ({ classId, studentId }) => createHold(classId, studentId),
 
     onSuccess: (data, variables) => {
-      // Persist student ID after a confirmed successful submission
       saveStudentId(variables.studentId)
 
-      // Invalidate class list + the specific class so seat counts refresh
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.classes.all })
       void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.classes.detail(variables.classId),

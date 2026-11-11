@@ -28,8 +28,6 @@ import {
 } from "@/components/ui/card"
 import type { ApiError } from "@/api/axios"
 
-// ── Skeleton Loader ─────────────────────────────────────────────────────────
-
 function HoldDetailsSkeleton() {
   return (
     <div className="space-y-6">
@@ -43,8 +41,6 @@ function HoldDetailsSkeleton() {
     </div>
   )
 }
-
-// ── Error State ────────────────────────────────────────────────────────────
 
 interface ErrorStateProps {
   status: number | null
@@ -87,8 +83,6 @@ function ErrorState({ status, message, onRetry }: ErrorStateProps) {
     </div>
   )
 }
-
-// ── Main Page ──────────────────────────────────────────────────────────────
 
 export default function HoldDetailsPage() {
   const { holdId } = useParams<{ holdId: string }>()
@@ -143,7 +137,6 @@ export default function HoldDetailsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Back Link */}
       <Link
         to="/"
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -164,7 +157,6 @@ export default function HoldDetailsPage() {
 
       {!isHoldLoading && !isHoldError && hold && (
         <div className="space-y-6">
-          {/* Header */}
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Application Status</h1>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -172,14 +164,12 @@ export default function HoldDetailsPage() {
             </p>
           </div>
 
-          {/* Countdown / Visual Timer (only active when HELD) */}
           <HoldCountdown
             expiresAt={hold.expiresAt}
             status={hold.status}
             onExpire={() => void refetchHold()}
           />
 
-          {/* Status-specific Guidance Card */}
           {hold.status === "HELD" && (
             <Card className="border-primary/20 bg-primary/5">
               <CardHeader className="pb-2">
@@ -280,10 +270,8 @@ export default function HoldDetailsPage() {
             </Card>
           )}
 
-          {/* Hold Summary Card */}
           <HoldSummary hold={hold} classNameTitle={cls?.name} />
 
-          {/* Confirmation Dialog ("Pay Admission Fee") */}
           <ConfirmAdmissionDialog
             isOpen={isConfirmDialogOpen}
             onClose={() => setIsConfirmDialogOpen(false)}
@@ -292,7 +280,6 @@ export default function HoldDetailsPage() {
             classNameTitle={cls?.name}
           />
 
-          {/* Cancellation Dialog ("Cancel") */}
           <CancelAdmissionDialog
             isOpen={isCancelDialogOpen}
             onClose={() => setIsCancelDialogOpen(false)}

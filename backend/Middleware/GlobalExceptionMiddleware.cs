@@ -4,11 +4,6 @@ using System.Net;
 using System.Text.Json;
 using SchoolAdmissionAPI.Exceptions;
 
-/// <summary>
-/// Global exception handling middleware.
-/// Catches unhandled exceptions, logs them securely, and returns safe, standardized JSON responses.
-/// Prevents exposing database stack traces or internal implementation details to API consumers.
-/// </summary>
 public class GlobalExceptionMiddleware
 {
     private readonly RequestDelegate _next;

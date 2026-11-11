@@ -4,17 +4,12 @@ import { getStudentId } from "@/lib/studentId"
 import { useStudent } from "@/context/StudentContext"
 import { QUERY_KEYS } from "@/lib/queryKeys"
 
-/**
- * Hook that fetches all admission applications for the current student.
- * Reads reactive student ID from StudentContext with fallback to localStorage.
- */
 export function useMyHolds(overrideStudentId?: string) {
   let contextStudentId = ""
   try {
     const student = useStudent()
     contextStudentId = student.studentId
   } catch {
-    // If used outside provider
   }
 
   const effectiveId = overrideStudentId || contextStudentId || getStudentId() || ""

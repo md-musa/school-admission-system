@@ -24,8 +24,6 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { ApiError } from "@/api/axios"
 
-// ── Types ──────────────────────────────────────────────────────────────────
-
 interface ClassDetails {
   id: string
   name: string
@@ -35,17 +33,13 @@ interface ClassDetails {
   availableSeats: number
 }
 
-// ── Skeleton ───────────────────────────────────────────────────────────────
-
 function ClassDetailSkeleton() {
   return (
     <div className="space-y-6">
-      {/* header */}
       <div className="space-y-2">
         <Skeleton className="h-8 w-64" />
         <Skeleton className="h-5 w-24 rounded-full" />
       </div>
-      {/* seat stats grid */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="rounded-xl border border-border p-4 space-y-2">
@@ -54,12 +48,10 @@ function ClassDetailSkeleton() {
           </div>
         ))}
       </div>
-      {/* progress bar */}
       <div className="space-y-2">
         <Skeleton className="h-3 w-full rounded-full" />
         <Skeleton className="h-4 w-40" />
       </div>
-      {/* admission card */}
       <div className="rounded-xl border border-border p-6 space-y-3">
         <Skeleton className="h-5 w-48" />
         <Skeleton className="h-4 w-72" />
@@ -68,8 +60,6 @@ function ClassDetailSkeleton() {
     </div>
   )
 }
-
-// ── Error state ────────────────────────────────────────────────────────────
 
 interface ErrorStateProps {
   status: number | null
@@ -111,8 +101,6 @@ function ErrorState({ status, message, onRetry }: ErrorStateProps) {
   )
 }
 
-// ── Stat card ──────────────────────────────────────────────────────────────
-
 interface StatCardProps {
   label: string
   value: number
@@ -142,8 +130,6 @@ function StatCard({ label, value, icon, highlight = false }: StatCardProps) {
   )
 }
 
-// ── Availability progress bar ──────────────────────────────────────────────
-
 interface AvailabilityBarProps {
   totalSeats: number
   confirmedSeats: number
@@ -163,7 +149,6 @@ function AvailabilityBar({
 
   return (
     <div className="space-y-2">
-      {/* Segmented bar */}
       <div
         className="flex h-3 w-full overflow-hidden rounded-full bg-muted"
         role="img"
@@ -186,7 +171,6 @@ function AvailabilityBar({
         />
       </div>
 
-      {/* Legend */}
       <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-2 w-2 rounded-full bg-primary/80" />
@@ -205,8 +189,6 @@ function AvailabilityBar({
   )
 }
 
-// ── Main page ──────────────────────────────────────────────────────────────
-
 export default function ClassDetailPage() {
   const { classId } = useParams<{ classId: string }>()
   const { data: cls, isLoading, isError, error, refetch } = useClassDetails(classId)
@@ -217,7 +199,6 @@ export default function ClassDetailPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* ── Back link ── */}
         <Link
           to="/"
           className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -226,7 +207,6 @@ export default function ClassDetailPage() {
           Back to Classes
         </Link>
 
-        {/* ── States ── */}
         {isLoading && <ClassDetailSkeleton />}
 
         {isError && (
@@ -240,7 +220,6 @@ export default function ClassDetailPage() {
         {!isLoading && !isError && cls && (
           <div className="space-y-8">
 
-            {/* ── Header ── */}
             <div className="space-y-2">
               <div className="flex items-start gap-3">
                 <GraduationCap
@@ -261,7 +240,6 @@ export default function ClassDetailPage() {
               </div>
             </div>
 
-            {/* ── Seat stats grid ── */}
             <div>
               <h2 className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 Seat Information
@@ -291,7 +269,6 @@ export default function ClassDetailPage() {
               </div>
             </div>
 
-            {/* ── Availability visualization ── */}
             <div>
               <h2 className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 Seat Availability
@@ -304,7 +281,6 @@ export default function ClassDetailPage() {
               />
             </div>
 
-            {/* ── Admission section ── */}
             <Card>
               <CardHeader>
                 <CardTitle>Apply for Admission</CardTitle>
@@ -337,7 +313,6 @@ export default function ClassDetailPage() {
               </CardContent>
             </Card>
 
-            {/* ── Application Modal ── */}
             <AdmissionApplicationForm
               isOpen={isApplicationOpen}
               onClose={() => setIsApplicationOpen(false)}

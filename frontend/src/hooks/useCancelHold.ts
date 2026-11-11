@@ -30,26 +30,22 @@ export function useCancelHold() {
     onSuccess: (_data, variables) => {
       const activeStudentId = variables.studentId || getStudentId()
 
-      // Invalidate the specific hold detail query
       void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.holds.detail(variables.holdId),
       })
 
-      // Invalidate the student's applications list
       if (activeStudentId) {
         void queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.holds.me(activeStudentId),
         })
       }
 
-      // Invalidate class details if classId provided
       if (variables.classId) {
         void queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.classes.detail(variables.classId),
         })
       }
 
-      // Invalidate class listing so released seats appear in real time
       void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.classes.all,
       })

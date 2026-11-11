@@ -7,12 +7,6 @@ interface ClassAvailabilityBadgeProps {
 
 type AvailabilityStatus = "available" | "limited" | "full"
 
-/**
- * Determines availability status:
- * - full      : availableSeats <= 0
- * - limited   : availableSeats > 0 AND availableSeats / totalSeats <= 0.10
- * - available : otherwise
- */
 function getAvailabilityStatus(
   availableSeats: number,
   totalSeats: number

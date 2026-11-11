@@ -33,7 +33,6 @@ export function AdmissionApplicationForm({
   const [validationError, setValidationError] = useState<string | null>(null)
   const { mutate: applyHold, isPending } = useCreateHold()
 
-  // Load existing student ID from context / localStorage when dialog opens
   useEffect(() => {
     if (isOpen) {
       setStudentId(contextStudentId || "")
@@ -59,7 +58,6 @@ export function AdmissionApplicationForm({
     }
 
     setValidationError(null)
-    // Synchronize to global context
     setContextStudentId(studentId)
 
     applyHold(

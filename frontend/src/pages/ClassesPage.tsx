@@ -32,15 +32,15 @@ function ClassesSkeletonGrid() {
 
 function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center border rounded-xl border-dashed p-8">
-      <BookOpen className="mb-4 text-muted-foreground size-12" />
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed p-8 py-16 text-center">
+      <BookOpen className="mb-4 size-12 text-muted-foreground" />
       <h2 className="mb-1 text-lg font-semibold">No Classes Available</h2>
-      <p className="max-w-md text-sm text-muted-foreground mb-4">
+      <p className="mb-4 max-w-md text-sm text-muted-foreground">
         No admission classes have been created yet. Click below to add one.
       </p>
       <Button onClick={onCreateClick} className="gap-2">
         <PlusCircle className="size-4" />
-        Create Class
+        Create Class (Admin)
       </Button>
     </div>
   )
@@ -54,7 +54,7 @@ interface ErrorStateProps {
 function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <AlertCircle className="mb-4 text-destructive size-10" />
+      <AlertCircle className="mb-4 size-10 text-destructive" />
       <h2 className="mb-1 text-lg font-semibold">Failed to Load Classes</h2>
       <p className="mb-6 max-w-sm text-sm text-muted-foreground">{message}</p>
       <Button variant="outline" onClick={onRetry} className="gap-2">
@@ -76,8 +76,7 @@ export default function ClassesPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* ── Header ── */}
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
+      <div className="mb-8 flex flex-col justify-between gap-4 border-b border-border pb-6 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Available Classes
@@ -89,7 +88,7 @@ export default function ClassesPage() {
 
         <Button
           onClick={() => setCreateDialogOpen(true)}
-          className="gap-2 shrink-0 self-start sm:self-auto"
+          className="shrink-0 gap-2 self-start sm:self-auto"
         >
           <PlusCircle className="size-4" />
           <span>Create Class</span>

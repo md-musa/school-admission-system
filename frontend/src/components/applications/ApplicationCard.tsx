@@ -17,7 +17,6 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
     timeStyle: "short",
   })
 
-  // Shorten holdId for cleaner display
   const shortHoldId = application.holdId.length > 12
     ? `${application.holdId.slice(0, 8)}...`
     : application.holdId

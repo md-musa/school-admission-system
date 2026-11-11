@@ -1,18 +1,15 @@
 import { useState, useEffect, useRef } from "react"
 
 export interface CountdownResult {
-  formatted: string // e.g., "04:32" or "Checking hold status..."
+  formatted: string
   isExpired: boolean
-  isWarning: boolean // e.g., less than 60 seconds
+  isWarning: boolean
   totalSecondsRemaining: number
 }
 
 /**
  * Calculates remaining time against backend expiresAt.
- * Updates every 1000ms.
- * When remaining time reaches 0, calls onExpire callback (to trigger query refetch)
- * and displays "Checking hold status...".
- * Frontend NEVER modifies the hold state to EXPIRED independently.
+ * Frontend does not modify hold state independently; it triggers a refetch from the backend when the timer elapses.
  */
 export function useHoldCountdown(
   expiresAt: string | undefined,
@@ -29,7 +26,6 @@ export function useHoldCountdown(
   const [secondsRemaining, setSecondsRemaining] = useState<number>(calculateRemainingSeconds)
   const hasTriggeredExpire = useRef(false)
 
-  // Re-sync whenever expiresAt changes
   useEffect(() => {
     hasTriggeredExpire.current = false
     setSecondsRemaining(calculateRemainingSeconds())

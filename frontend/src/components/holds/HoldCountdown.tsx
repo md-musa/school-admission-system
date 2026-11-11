@@ -11,7 +11,6 @@ interface HoldCountdownProps {
 export function HoldCountdown({ expiresAt, status, onExpire }: HoldCountdownProps) {
   const { formatted, isWarning, isExpired } = useHoldCountdown(expiresAt, onExpire)
 
-  // Hide countdown for terminal states
   if (status === "CONFIRMED" || status === "CANCELLED") {
     return null
   }

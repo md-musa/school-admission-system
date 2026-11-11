@@ -79,7 +79,6 @@ export default function MyApplicationsPage() {
 
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("ALL")
 
-  // Filter calculations & counts
   const counts = useMemo<Record<FilterStatus, number>>(() => {
     const defaultCounts: Record<FilterStatus, number> = {
       ALL: applications?.length ?? 0,
@@ -100,7 +99,6 @@ export default function MyApplicationsPage() {
     return defaultCounts
   }, [applications])
 
-  // Summary counts
   const summaryStats = useMemo(() => {
     const total = applications?.length ?? 0
     const held = counts.HELD
@@ -111,7 +109,6 @@ export default function MyApplicationsPage() {
     return { total, active, confirmed, inactive }
   }, [applications, counts])
 
-  // Filtered applications list
   const filteredApplications = useMemo(() => {
     if (!applications) return []
     if (statusFilter === "ALL") return applications
@@ -130,7 +127,6 @@ export default function MyApplicationsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Navigation back */}
       <Link
         to="/"
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -139,7 +135,6 @@ export default function MyApplicationsPage() {
         Back to Classes
       </Link>
 
-      {/* Header */}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -161,7 +156,6 @@ export default function MyApplicationsPage() {
         )}
       </div>
 
-      {/* Missing Student ID State */}
       {!isValid && (
         <div className="flex flex-col items-center justify-center py-12 text-center border rounded-xl border-dashed p-8 bg-muted/10 max-w-xl mx-auto">
           <IdCard className="mb-4 text-primary size-12" />
@@ -192,15 +186,12 @@ export default function MyApplicationsPage() {
         </div>
       )}
 
-      {/* Loading */}
       {isValid && isLoading && <MyApplicationsSkeleton />}
 
-      {/* Error */}
       {isValid && isError && (
         <ErrorState message={errorMessage} onRetry={() => void refetch()} />
       )}
 
-      {/* Empty State */}
       {isValid && !isLoading && !isError && applications?.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-center border rounded-xl border-dashed p-8">
           <FileQuestion className="mb-4 text-muted-foreground size-12" />
@@ -217,13 +208,10 @@ export default function MyApplicationsPage() {
         </div>
       )}
 
-      {/* Data List */}
       {isValid && !isLoading && !isError && applications && applications.length > 0 && (
         <div className="space-y-6">
-          {/* Summary Statistics */}
           <ApplicationsSummary {...summaryStats} />
 
-          {/* Filter */}
           <div className="flex items-center justify-between">
             <ApplicationStatusFilter
               currentFilter={statusFilter}
@@ -232,7 +220,6 @@ export default function MyApplicationsPage() {
             />
           </div>
 
-          {/* Application Cards Grid */}
           {filteredApplications.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredApplications.map((app) => (
