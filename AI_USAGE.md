@@ -5,17 +5,23 @@
 ### Where I Used AI
 
 - Frontend and backend development.
-- Docker configuration.
-- Debugging and documentation.
+- Docker setup and configuration.
+- Debugging and fixing errors.
+- Writing project documentation.
 
 ### AI Mistakes
 
-1. Generated an incorrect API URL using `localhost` for the Codespaces environment.
-2. Initially misunderstood the difference between browser URLs and Docker internal service URLs.
-3. Suggested some unnecessary code and configurations.
-4. Generated code that did not fully match the existing API response structure.
-5. Some generated configurations needed adjustments to work with the existing Docker setup.
+1. Created files in inconsistent folders.
+2. Used incorrect API URLs in Codespaces.
+3. Used wrong API response field names.
+4. Added unnecessary code and comments.
+5. Missed some error-handling cases.
+6. Generated Docker settings that needed changes.
+
+### How I Fixed Them
+
+I reviewed the generated code and corrected the file structure, API URLs, and response fields. I also removed unnecessary code and improved error handling. I tested the Docker setup and fixed the configuration issues.
 
 ### Verification
 
-I identified these issues through code review, browser console errors, API testing, and Docker logs.
+I checked the code and tested the API endpoints. I also used browser console errors and Docker logs to find problems. After making changes, I tested the application again.

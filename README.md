@@ -43,7 +43,7 @@ Once the containers are running, access the services at:
 
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:8080
-- **Classes API**: http://localhost:8080/classes
+- **Classes API**: http://localhost:8080
 
 ## 5. Stopping the Application
 
