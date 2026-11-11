@@ -215,10 +215,8 @@ export default function ClassDetailPage() {
   const isFull = cls ? cls.availableSeats <= 0 : false
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-
-        {/* ── Back link ── */}
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* ── Back link ── */}
         <Link
           to="/"
           className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -340,7 +338,6 @@ export default function ClassDetailPage() {
             />
           </div>
         )}
-      </div>
     </div>
   )
 }

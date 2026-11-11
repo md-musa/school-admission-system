@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="eduGrad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+  <!-- Background rounded shield/tile -->
+  <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#eduGrad)" />
+  <!-- Cap diamond -->
+  <path d="M24 12L38 18.5L24 25L10 18.5L24 12Z" fill="#ffffff" />
+  <!-- Cap neck/base -->
+  <path d="M15 22.5V28C15 31.8 19 34.5 24 34.5C29 34.5 33 31.8 33 28V22.5L24 26.8L15 22.5Z" fill="#e0e7ff" />
+  <!-- Tassel -->
+  <path d="M34 20V29C34 30 33 30.5 32 30" stroke="#fef08a" stroke-width="2" stroke-linecap="round" />
+  <circle cx="32" cy="31" r="1.5" fill="#fef08a" />
+</svg>

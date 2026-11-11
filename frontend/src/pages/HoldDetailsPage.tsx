@@ -7,13 +7,16 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
+  Ban,
 } from "lucide-react"
 import { useHoldDetails } from "@/hooks/useHoldDetails"
 import { useClassDetails } from "@/hooks/useClassDetails"
 import { useConfirmHold } from "@/hooks/useConfirmHold"
+import { useCancelHold } from "@/hooks/useCancelHold"
 import { HoldCountdown } from "@/components/holds/HoldCountdown"
 import { HoldSummary } from "@/components/holds/HoldSummary"
 import { ConfirmAdmissionDialog } from "@/components/holds/ConfirmAdmissionDialog"
+import { CancelAdmissionDialog } from "@/components/holds/CancelAdmissionDialog"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -99,8 +102,10 @@ export default function HoldDetailsPage() {
 
   const { data: cls } = useClassDetails(hold?.classId)
   const { mutate: confirmAdmission, isPending: isConfirming } = useConfirmHold()
+  const { mutate: cancelAdmission, isPending: isCancelling } = useCancelHold()
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
 
   const apiError = holdError as unknown as ApiError | null
 
@@ -120,10 +125,25 @@ export default function HoldDetailsPage() {
     )
   }
 
+  const handleCancelSubmit = () => {
+    if (!hold) return
+    cancelAdmission(
+      {
+        holdId: hold.holdId,
+        classId: hold.classId,
+        studentId: hold.studentId,
+      },
+      {
+        onSuccess: () => {
+          setIsCancelDialogOpen(false)
+        },
+      }
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-        {/* Back Link */}
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Back Link */}
         <Link
           to="/"
           className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -168,16 +188,24 @@ export default function HoldDetailsPage() {
                     <CardTitle className="text-base">Seat Temporarily Reserved</CardTitle>
                   </div>
                   <CardDescription>
-                    Your seat is held. Please confirm your admission before the timer expires to secure your enrollment.
+                    Your seat is held. Please confirm your admission before the timer expires to secure your enrollment, or cancel if you no longer wish to apply.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-2 space-y-4">
+                <CardContent className="pt-2 flex flex-col sm:flex-row items-center gap-3">
                   <Button
                     onClick={() => setIsConfirmDialogOpen(true)}
                     className="w-full sm:w-auto gap-2"
                   >
                     <CheckCircle2 className="size-4" />
                     Confirm Admission
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCancelDialogOpen(true)}
+                    className="w-full sm:w-auto gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20"
+                  >
+                    <Ban className="size-4" />
+                    Cancel Application
                   </Button>
                 </CardContent>
               </Card>
@@ -263,9 +291,17 @@ export default function HoldDetailsPage() {
               isPending={isConfirming}
               classNameTitle={cls?.name}
             />
+
+            {/* Cancellation Dialog */}
+            <CancelAdmissionDialog
+              isOpen={isCancelDialogOpen}
+              onClose={() => setIsCancelDialogOpen(false)}
+              onConfirm={handleCancelSubmit}
+              isPending={isCancelling}
+              classNameTitle={cls?.name}
+            />
           </div>
         )}
-      </div>
     </div>
   )
 }

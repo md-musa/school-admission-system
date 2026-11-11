@@ -1,5 +1,11 @@
 import apiClient from "@/api/axios"
-import { HOLDS_CREATE, HOLDS_DETAIL, HOLDS_CONFIRM, ME_HOLDS } from "@/api/endpoints"
+import {
+  HOLDS_CREATE,
+  HOLDS_DETAIL,
+  HOLDS_CONFIRM,
+  HOLDS_CANCEL,
+  ME_HOLDS,
+} from "@/api/endpoints"
 
 export type HoldStatus = "HELD" | "CONFIRMED" | "CANCELLED" | "EXPIRED"
 
@@ -64,6 +70,20 @@ export async function confirmHold(
     { headers: { "X-Student-Id": studentId } }
   )
   return response.data
+}
+
+/**
+ * Cancels an admission hold for the given student.
+ * Sends DELETE /holds/{holdId} with X-Student-Id header and no body.
+ * Handles 204 No Content response.
+ */
+export async function cancelHold(
+  holdId: string,
+  studentId: string
+): Promise<void> {
+  await apiClient.delete(HOLDS_CANCEL(holdId), {
+    headers: { "X-Student-Id": studentId },
+  })
 }
 
 /**

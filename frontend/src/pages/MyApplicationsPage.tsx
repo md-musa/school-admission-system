@@ -130,9 +130,8 @@ export default function MyApplicationsPage() {
   const errorMessage = apiError?.message ?? "An unexpected error occurred."
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-        {/* Navigation back */}
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Navigation back */}
         <Link
           to="/"
           className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -234,7 +233,6 @@ export default function MyApplicationsPage() {
             )}
           </div>
         )}
-      </div>
     </div>
   )
 }
