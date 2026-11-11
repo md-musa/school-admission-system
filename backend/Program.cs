@@ -36,6 +36,24 @@ builder.Services.AddScoped<IAdmissionHoldService, AdmissionHoldService>();
 // Register MVC controllers with automatic model validation and camelCase JSON
 builder.Services.AddControllers();
 
+// =============================================================================
+// CORS — allow the Vite dev server and any local frontend origin
+// =============================================================================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendDev", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:4173"   // vite preview
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 // =============================================================================
@@ -52,6 +70,9 @@ using (var scope = app.Services.CreateScope())
 // =============================================================================
 // Global error handling middleware (prevents leaking internal details)
 app.UseMiddleware<GlobalExceptionMiddleware>();
+
+// CORS must come before controllers
+app.UseCors("FrontendDev");
 
 // Only enforce HTTPS redirection in non-development environments
 if (!app.Environment.IsDevelopment())
