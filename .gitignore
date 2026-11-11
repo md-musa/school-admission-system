@@ -1,0 +1,52 @@
+# =============================================================================
+# Environment Files & Secrets (keep example templates)
+# =============================================================================
+.env
+.env.local
+.env.*.local
+*.local
+!.env.example
+!frontend/.env.example
+!backend/appsettings.Development.json.example
+
+# =============================================================================
+# Build & Output Artifacts (.NET & Node)
+# =============================================================================
+bin/
+obj/
+dist/
+dist-ssr/
+node_modules/
+TestResults/
+coverage/
+
+# =============================================================================
+# IDE & Editor Settings
+# =============================================================================
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =============================================================================
+# Operating System Files
+# =============================================================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# =============================================================================
+# Logs
+# =============================================================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
