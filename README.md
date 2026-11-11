@@ -40,14 +40,26 @@ A concurrency-safe, first-come-first-served school admission seat reservation sy
 
 ### Docker Compose (recommended)
 
+Run the entire application stack (PostgreSQL, Backend API, and Frontend) with a single command:
+
 ```bash
-# Build and start both PostgreSQL and the API
+# Build and start PostgreSQL, Backend API, and Frontend
 docker compose up --build
 
-# Start without rebuilding
-docker compose up
+# Start in detached background mode
+docker compose up -d
 
-# Stop (preserves PostgreSQL data volume)
+# Stop all containers (preserves database data volume)
+docker compose down
+
+# Stop and wipe database volume (clean reset)
+docker compose down -v
+```
+
+Once running:
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8080
+- **Database**: localhost:5432 (internal service: `db:5432`)
 docker compose down
 
 # Stop AND wipe data (use with caution)
