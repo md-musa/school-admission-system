@@ -22,11 +22,17 @@ export function saveStudentId(id: string): void {
     throw new Error("Student ID must be exactly 17 numeric digits.")
   }
   localStorage.setItem(STORAGE_KEYS.STUDENT_ID, id)
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("student_id_updated"))
+  }
 }
 
 /** Removes the student ID from localStorage. */
 export function clearStudentId(): void {
   localStorage.removeItem(STORAGE_KEYS.STUDENT_ID)
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("student_id_updated"))
+  }
 }
 
 /**

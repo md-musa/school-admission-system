@@ -21,7 +21,7 @@ export function ApplicationsSummary({
       icon: <Layers className="size-4 text-muted-foreground" />,
     },
     {
-      label: "Active Holds",
+      label: "Held (Pending)",
       value: active - confirmed, // HELD count
       icon: <Clock className="size-4 text-amber-500" />,
     },
@@ -44,11 +44,11 @@ export function ApplicationsSummary({
           <CardContent className="pt-4 pb-4">
             <div className="flex items-center gap-2 text-muted-foreground mb-1">
               {stat.icon}
-              <span className="text-xs font-medium uppercase tracking-wide">
+              <span className="text-xs font-semibold text-foreground">
                 {stat.label}
               </span>
             </div>
-            <p className="text-2xl font-bold tabular-nums text-foreground">
+            <p className="text-2xl font-bold tracking-tight text-foreground">
               {stat.value}
             </p>
           </CardContent>

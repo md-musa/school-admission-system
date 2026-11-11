@@ -7,7 +7,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react"
+import { CreditCard, CheckCircle2, Loader2, Sparkles } from "lucide-react"
 
 interface ConfirmAdmissionDialogProps {
   isOpen: boolean
@@ -29,11 +29,11 @@ export function ConfirmAdmissionDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 text-primary mb-1">
-            <CheckCircle2 className="size-5" />
-            <DialogTitle>Confirm Admission</DialogTitle>
+            <CreditCard className="size-5" />
+            <DialogTitle className="text-lg">Pay Admission Fee</DialogTitle>
           </div>
           <DialogDescription>
-            You are about to confirm your admission for{" "}
+            Confirm your admission seat reservation for{" "}
             <span className="font-semibold text-foreground">
               {classNameTitle || "this class"}
             </span>.
@@ -41,11 +41,16 @@ export function ConfirmAdmissionDialog({
         </DialogHeader>
 
         <div className="space-y-3 py-2 text-sm">
-          <div className="rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground flex items-start gap-2">
-            <AlertCircle className="size-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
-            <span>
-              Once confirmed, your seat reservation will be permanently locked. Please make sure you have reviewed the class details.
-            </span>
+          <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3.5 text-xs text-foreground flex items-start gap-2.5">
+            <Sparkles className="size-4 shrink-0 mt-0.5 text-green-600 dark:text-green-400" />
+            <div className="space-y-1">
+              <p className="font-semibold text-green-700 dark:text-green-400">
+                Simulated Payment:
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                Clicking &quot;Pay Admission Fee&quot; assumes that the payment is successful. No real payment gateway integration is required. Your admission seat will be permanently confirmed.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -62,10 +67,19 @@ export function ConfirmAdmissionDialog({
             type="button"
             onClick={onConfirm}
             disabled={isPending}
-            className="gap-2"
+            className="gap-2 bg-green-600 hover:bg-green-700 text-white font-medium"
           >
-            {isPending && <Loader2 className="size-4 animate-spin" />}
-            {isPending ? "Confirming..." : "Confirm Admission"}
+            {isPending ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                <span>Confirming...</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="size-4" />
+                <span>Pay Admission Fee</span>
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

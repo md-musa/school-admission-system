@@ -267,23 +267,23 @@ export default function ClassDetailPage() {
               </h2>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <StatCard
-                  label="Total"
+                  label="Total Seats"
                   value={(cls as ClassDetails).totalSeats}
                   icon={<Users size={13} />}
                 />
                 <StatCard
-                  label="Available"
+                  label="Available Seats"
                   value={(cls as ClassDetails).availableSeats}
                   icon={<CheckCircle size={13} />}
                   highlight
                 />
                 <StatCard
-                  label="On Hold"
+                  label="Held Seats"
                   value={(cls as ClassDetails).heldSeats}
                   icon={<Clock size={13} />}
                 />
                 <StatCard
-                  label="Confirmed"
+                  label="Confirmed Seats"
                   value={(cls as ClassDetails).confirmedSeats}
                   icon={<CheckCircle size={13} />}
                 />
@@ -324,7 +324,7 @@ export default function ClassDetailPage() {
                       : "Apply for admission to this class"
                   }
                 >
-                  {isFull ? "No Seats Available" : "Apply for Admission"}
+                  {isFull ? "Class Full" : "Apply Now"}
                 </Button>
               </CardContent>
             </Card>

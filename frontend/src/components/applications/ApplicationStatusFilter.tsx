@@ -10,7 +10,7 @@ interface ApplicationStatusFilterProps {
 
 const filterOptions: { label: string; value: FilterStatus }[] = [
   { label: "All", value: "ALL" },
-  { label: "On Hold", value: "HELD" },
+  { label: "Held", value: "HELD" },
   { label: "Confirmed", value: "CONFIRMED" },
   { label: "Expired", value: "EXPIRED" },
   { label: "Cancelled", value: "CANCELLED" },

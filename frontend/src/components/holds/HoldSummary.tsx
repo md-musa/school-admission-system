@@ -65,7 +65,7 @@ export function HoldSummary({ hold, classNameTitle }: HoldSummaryProps) {
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-          <span className="text-muted-foreground text-xs uppercase tracking-wider">Student ID</span>
+          <span className="text-muted-foreground text-xs uppercase tracking-wider">Registration Number</span>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs text-foreground bg-muted px-2 py-0.5 rounded">
               {showFullStudentId ? hold.studentId : maskStudentId(hold.studentId)}
@@ -74,7 +74,7 @@ export function HoldSummary({ hold, classNameTitle }: HoldSummaryProps) {
               variant="ghost"
               size="icon-xs"
               onClick={() => setShowFullStudentId(!showFullStudentId)}
-              title={showFullStudentId ? "Hide Student ID" : "Show Student ID"}
+              title={showFullStudentId ? "Hide Registration Number" : "Show Registration Number"}
               type="button"
               className="text-muted-foreground hover:text-foreground"
             >

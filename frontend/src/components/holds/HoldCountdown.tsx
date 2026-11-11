@@ -23,7 +23,7 @@ export function HoldCountdown({ expiresAt, status, onExpire }: HoldCountdownProp
           This reservation has expired.
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          The temporary seat hold is no longer valid.
+          The temporary seat hold is no longer valid. The seat has been released back to the class pool.
         </p>
       </div>
     )
@@ -43,7 +43,7 @@ export function HoldCountdown({ expiresAt, status, onExpire }: HoldCountdownProp
         ) : (
           <Clock className="size-4" />
         )}
-        <span className="text-xs font-medium uppercase tracking-wider">
+        <span className="text-xs font-semibold uppercase tracking-wider text-foreground">
           {isExpired ? "Status Check" : "Time Remaining to Confirm"}
         </span>
       </div>
@@ -61,8 +61,8 @@ export function HoldCountdown({ expiresAt, status, onExpire }: HoldCountdownProp
       </div>
 
       {isWarning && (
-        <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-400">
-          Hurry! Less than a minute remaining to confirm your admission.
+        <p className="mt-2 text-xs font-semibold text-amber-600 dark:text-amber-400">
+          ⚠️ Hurry! Less than a minute remaining. Click &quot;Pay Admission Fee&quot; to secure your seat.
         </p>
       )}
     </div>

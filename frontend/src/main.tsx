@@ -6,14 +6,17 @@ import { Toaster } from "sonner"
 import "./index.css"
 import App from "./App.tsx"
 import { ThemeProvider } from "@/components/theme-provider.tsx"
+import { StudentProvider } from "@/context/StudentContext.tsx"
 import queryClient from "@/lib/queryClient.ts"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <App />
-        <Toaster richColors position="top-right" />
+        <StudentProvider>
+          <App />
+          <Toaster richColors position="top-right" />
+        </StudentProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>

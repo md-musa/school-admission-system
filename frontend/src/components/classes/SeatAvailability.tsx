@@ -6,11 +6,13 @@ interface SeatRowProps {
 
 function SeatRow({ label, value, highlight = false }: SeatRowProps) {
   return (
-    <div className="flex items-center justify-between py-1">
-      <span className="text-sm text-muted-foreground">{label}</span>
+    <div className="flex items-center justify-between py-1 text-xs">
+      <span className={highlight ? "font-semibold text-foreground" : "text-muted-foreground"}>
+        {label}
+      </span>
       <span
-        className={`text-sm font-semibold tabular-nums ${
-          highlight ? "text-primary" : "text-foreground"
+        className={`font-semibold tabular-nums ${
+          highlight ? "text-primary text-sm font-bold" : "text-foreground"
         }`}
       >
         {value}
@@ -38,9 +40,9 @@ export function SeatAvailability({
   )
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       {/* Progress bar */}
-      <div className="mb-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+      <div className="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
         <div
           className="h-full rounded-full bg-primary transition-all"
           style={{ width: `${fillPercent}%` }}
@@ -48,11 +50,13 @@ export function SeatAvailability({
         />
       </div>
 
-      <SeatRow label="Total seats" value={totalSeats} />
-      <SeatRow label="Confirmed" value={confirmedSeats} />
-      <SeatRow label="On hold" value={heldSeats} />
-      <div className="mt-1 border-t border-border pt-1">
-        <SeatRow label="Available" value={availableSeats} highlight />
+      <div className="divide-y divide-border/40">
+        <SeatRow label="Total seats" value={totalSeats} />
+        <SeatRow label="Held seats" value={heldSeats} />
+        <SeatRow label="Confirmed seats" value={confirmedSeats} />
+        <div className="mt-1 pt-1 bg-primary/5 rounded px-2">
+          <SeatRow label="Available seats" value={availableSeats} highlight />
+        </div>
       </div>
     </div>
   )

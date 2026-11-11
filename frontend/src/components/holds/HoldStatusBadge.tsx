@@ -9,7 +9,7 @@ const statusConfig: Record<
   HoldStatus,
   { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
 > = {
-  HELD: { label: "Awaiting Confirmation", variant: "secondary" },
+  HELD: { label: "Held (Pending Fee)", variant: "secondary" },
   CONFIRMED: { label: "Confirmed", variant: "default" },
   EXPIRED: { label: "Expired", variant: "destructive" },
   CANCELLED: { label: "Cancelled", variant: "outline" },

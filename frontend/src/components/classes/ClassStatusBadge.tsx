@@ -20,7 +20,7 @@ const statusConfig: Record<
 > = {
   available: { label: "Available", variant: "default" },
   "almost-full": { label: "Almost Full", variant: "secondary" },
-  full: { label: "Full", variant: "destructive" },
+  full: { label: "Class Full", variant: "destructive" },
 }
 
 export function ClassStatusBadge({

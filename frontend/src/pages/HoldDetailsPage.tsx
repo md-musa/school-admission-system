@@ -144,164 +144,164 @@ export default function HoldDetailsPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Back Link */}
-        <Link
-          to="/"
-          className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft size={15} />
-          Back to Classes
-        </Link>
+      <Link
+        to="/"
+        className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={15} />
+        Back to Classes
+      </Link>
 
-        {isHoldLoading && <HoldDetailsSkeleton />}
+      {isHoldLoading && <HoldDetailsSkeleton />}
 
-        {isHoldError && (
-          <ErrorState
-            status={apiError?.status ?? null}
-            message={apiError?.message ?? "An unexpected error occurred."}
-            onRetry={() => void refetchHold()}
-          />
-        )}
+      {isHoldError && (
+        <ErrorState
+          status={apiError?.status ?? null}
+          message={apiError?.message ?? "An unexpected error occurred."}
+          onRetry={() => void refetchHold()}
+        />
+      )}
 
-        {!isHoldLoading && !isHoldError && hold && (
-          <div className="space-y-6">
-            {/* Header */}
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">Admission Application</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Track your admission hold status and next steps.
-              </p>
-            </div>
-
-            {/* Countdown / Visual Timer (only active when HELD) */}
-            <HoldCountdown
-              expiresAt={hold.expiresAt}
-              status={hold.status}
-              onExpire={() => void refetchHold()}
-            />
-
-            {/* Status-specific Guidance Card */}
-            {hold.status === "HELD" && (
-              <Card className="border-primary/20 bg-primary/5">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2">
-                    <Clock className="size-5 text-primary" />
-                    <CardTitle className="text-base">Seat Temporarily Reserved</CardTitle>
-                  </div>
-                  <CardDescription>
-                    Your seat is held. Please confirm your admission before the timer expires to secure your enrollment, or cancel if you no longer wish to apply.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-2 flex flex-col sm:flex-row items-center gap-3">
-                  <Button
-                    onClick={() => setIsConfirmDialogOpen(true)}
-                    className="w-full sm:w-auto gap-2"
-                  >
-                    <CheckCircle2 className="size-4" />
-                    Confirm Admission
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsCancelDialogOpen(true)}
-                    className="w-full sm:w-auto gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20"
-                  >
-                    <Ban className="size-4" />
-                    Cancel Application
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            {hold.status === "CONFIRMED" && (
-              <Card className="border-green-500/30 bg-green-500/5">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-green-600" />
-                    <CardTitle className="text-base text-green-700 dark:text-green-400">
-                      Admission Confirmed
-                    </CardTitle>
-                  </div>
-                  <CardDescription>
-                    Congratulations! Your admission seat has been officially confirmed.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">
-                    Your seat is permanently reserved in {cls?.name || "the selected class"}.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            {hold.status === "EXPIRED" && (
-              <Card className="border-destructive/30 bg-destructive/5">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="size-5 text-destructive" />
-                    <CardTitle className="text-base text-destructive">
-                      Application Expired
-                    </CardTitle>
-                  </div>
-                  <CardDescription>
-                    The temporary reservation window has closed. The seat has been released back to the class pool.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Link
-                    to="/"
-                    className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-muted hover:text-foreground transition-colors"
-                  >
-                    Browse Available Classes
-                  </Link>
-                </CardContent>
-              </Card>
-            )}
-
-            {hold.status === "CANCELLED" && (
-              <Card className="border-muted bg-muted/20">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <XCircle className="size-5 text-muted-foreground" />
-                    <CardTitle className="text-base text-foreground">
-                      Application Cancelled
-                    </CardTitle>
-                  </div>
-                  <CardDescription>
-                    This admission application was cancelled and the seat hold is no longer active.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Link
-                    to="/"
-                    className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-muted hover:text-foreground transition-colors"
-                  >
-                    Browse Available Classes
-                  </Link>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Hold Summary Card */}
-            <HoldSummary hold={hold} classNameTitle={cls?.name} />
-
-            {/* Confirmation Dialog */}
-            <ConfirmAdmissionDialog
-              isOpen={isConfirmDialogOpen}
-              onClose={() => setIsConfirmDialogOpen(false)}
-              onConfirm={handleConfirmSubmit}
-              isPending={isConfirming}
-              classNameTitle={cls?.name}
-            />
-
-            {/* Cancellation Dialog */}
-            <CancelAdmissionDialog
-              isOpen={isCancelDialogOpen}
-              onClose={() => setIsCancelDialogOpen(false)}
-              onConfirm={handleCancelSubmit}
-              isPending={isCancelling}
-              classNameTitle={cls?.name}
-            />
+      {!isHoldLoading && !isHoldError && hold && (
+        <div className="space-y-6">
+          {/* Header */}
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Application Status</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Track your admission hold status, expiration countdown, and complete your enrollment.
+            </p>
           </div>
-        )}
+
+          {/* Countdown / Visual Timer (only active when HELD) */}
+          <HoldCountdown
+            expiresAt={hold.expiresAt}
+            status={hold.status}
+            onExpire={() => void refetchHold()}
+          />
+
+          {/* Status-specific Guidance Card */}
+          {hold.status === "HELD" && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="size-5 text-primary" />
+                  <CardTitle className="text-base">Seat Temporarily Reserved</CardTitle>
+                </div>
+                <CardDescription className="text-xs leading-relaxed">
+                  Your seat is currently held. Click &quot;Pay Admission Fee&quot; before the timer expires to confirm your admission (payment is simulated), or click &quot;Cancel&quot; if you wish to release your seat.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+                <Button
+                  onClick={() => setIsConfirmDialogOpen(true)}
+                  className="w-full sm:w-auto gap-2 bg-green-600 hover:bg-green-700 text-white font-medium"
+                >
+                  <CheckCircle2 className="size-4" />
+                  Pay Admission Fee
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCancelDialogOpen(true)}
+                  className="w-full sm:w-auto gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20 font-medium"
+                >
+                  <Ban className="size-4" />
+                  Cancel
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {hold.status === "CONFIRMED" && (
+            <Card className="border-green-500/30 bg-green-500/5">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-5 text-green-600" />
+                  <CardTitle className="text-base text-green-700 dark:text-green-400">
+                    Admission Confirmed
+                  </CardTitle>
+                </div>
+                <CardDescription>
+                  Congratulations! Your admission seat has been officially confirmed.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  Your seat is permanently reserved in {cls?.name || "the selected class"}.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {hold.status === "EXPIRED" && (
+            <Card className="border-destructive/30 bg-destructive/5">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="size-5 text-destructive" />
+                  <CardTitle className="text-base text-destructive">
+                    Application Expired
+                  </CardTitle>
+                </div>
+                <CardDescription>
+                  The temporary reservation window has closed. The seat has been released back to the class pool.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Link
+                  to="/"
+                  className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  Browse Available Classes
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+
+          {hold.status === "CANCELLED" && (
+            <Card className="border-muted bg-muted/20">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <XCircle className="size-5 text-muted-foreground" />
+                  <CardTitle className="text-base text-foreground">
+                    Application Cancelled
+                  </CardTitle>
+                </div>
+                <CardDescription>
+                  This admission application was cancelled and the seat hold is no longer active.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Link
+                  to="/"
+                  className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  Browse Available Classes
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Hold Summary Card */}
+          <HoldSummary hold={hold} classNameTitle={cls?.name} />
+
+          {/* Confirmation Dialog ("Pay Admission Fee") */}
+          <ConfirmAdmissionDialog
+            isOpen={isConfirmDialogOpen}
+            onClose={() => setIsConfirmDialogOpen(false)}
+            onConfirm={handleConfirmSubmit}
+            isPending={isConfirming}
+            classNameTitle={cls?.name}
+          />
+
+          {/* Cancellation Dialog ("Cancel") */}
+          <CancelAdmissionDialog
+            isOpen={isCancelDialogOpen}
+            onClose={() => setIsCancelDialogOpen(false)}
+            onConfirm={handleCancelSubmit}
+            isPending={isCancelling}
+            classNameTitle={cls?.name}
+          />
+        </div>
+      )}
     </div>
   )
 }

@@ -33,7 +33,7 @@ export function CancelAdmissionDialog({
             <DialogTitle>Cancel Application</DialogTitle>
           </div>
           <DialogDescription>
-            Are you sure you want to cancel your admission application for{" "}
+            Are you sure you want to cancel your admission reservation for{" "}
             <span className="font-semibold text-foreground">
               {classNameTitle || "this class"}
             </span>?
@@ -66,7 +66,7 @@ export function CancelAdmissionDialog({
             className="gap-2"
           >
             {isPending && <Loader2 className="size-4 animate-spin" />}
-            {isPending ? "Cancelling..." : "Yes, Cancel Application"}
+            {isPending ? "Cancelling..." : "Cancel Application"}
           </Button>
         </DialogFooter>
       </DialogContent>
