@@ -1,5 +1,5 @@
 import apiClient from "@/api/axios"
-import { HOLDS_CREATE, HOLDS_DETAIL } from "@/api/endpoints"
+import { HOLDS_CREATE, HOLDS_DETAIL, ME_HOLDS } from "@/api/endpoints"
 
 export type HoldStatus = "HELD" | "CONFIRMED" | "CANCELLED" | "EXPIRED"
 
@@ -9,6 +9,16 @@ export interface HoldResponse {
   studentId: string
   status: HoldStatus
   expiresAt: string
+}
+
+export interface StudentApplicationItem {
+  holdId: string
+  classId: string
+  className?: string
+  studentId?: string
+  status: HoldStatus
+  expiresAt: string
+  createdAt?: string
 }
 
 /**
@@ -32,5 +42,16 @@ export async function createHold(
  */
 export async function getHoldById(holdId: string): Promise<HoldResponse> {
   const response = await apiClient.get<HoldResponse>(HOLDS_DETAIL(holdId))
+  return response.data
+}
+
+/**
+ * Fetches all holds/applications belonging to the given student ID.
+ * Sends the X-Student-Id header.
+ */
+export async function getMyHolds(studentId: string): Promise<StudentApplicationItem[]> {
+  const response = await apiClient.get<StudentApplicationItem[]>(ME_HOLDS, {
+    headers: { "X-Student-Id": studentId },
+  })
   return response.data
 }

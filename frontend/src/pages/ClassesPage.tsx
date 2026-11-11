@@ -1,4 +1,5 @@
-import { RefreshCw, AlertCircle, BookOpen } from "lucide-react"
+import { RefreshCw, AlertCircle, BookOpen, FileText } from "lucide-react"
+import { Link } from "react-router-dom"
 import { useClasses } from "@/hooks/useClasses"
 import { ClassCard, type ClassData } from "@/components/classes/ClassCard"
 import { Button } from "@/components/ui/button"
@@ -80,17 +81,29 @@ export default function ClassesPage() {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
 
         {/* ── Header ── */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Available Classes
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Browse open classes and check seat availability before applying.
-          </p>
-          <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-            <RefreshCw size={11} className="shrink-0" />
-            Seat availability refreshes automatically every 5 seconds.
-          </p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+              Available Classes
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Browse open classes and check seat availability before applying.
+            </p>
+            <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+              <RefreshCw size={11} className="shrink-0" />
+              Seat availability refreshes automatically every 5 seconds.
+            </p>
+          </div>
+
+          <div>
+            <Link
+              to="/my-applications"
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-muted hover:text-foreground transition-colors shadow-xs"
+            >
+              <FileText className="size-4 text-primary" />
+              <span>My Applications</span>
+            </Link>
+          </div>
         </div>
 
         {/* ── States ── */}

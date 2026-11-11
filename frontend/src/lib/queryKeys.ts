@@ -7,8 +7,6 @@ export const QUERY_KEYS = {
   holds: {
     all: ["holds"] as const,
     detail: (holdId: string) => ["holds", holdId] as const,
-  },
-  me: {
-    holds: ["me", "holds"] as const,
+    me: (studentId: string) => ["holds", "me", studentId] as const,
   },
 } as const
