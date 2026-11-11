@@ -1,5 +1,5 @@
+import { useState } from "react"
 import { useParams, Link } from "react-router-dom"
-import { toast } from "sonner"
 import {
   ArrowLeft,
   GraduationCap,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import { useClassDetails } from "@/hooks/useClassDetails"
 import { ClassAvailabilityBadge } from "@/components/classes/ClassAvailabilityBadge"
+import { AdmissionApplicationForm } from "@/components/admission/AdmissionApplicationForm"
 import {
   Card,
   CardContent,
@@ -208,16 +209,10 @@ function AvailabilityBar({
 export default function ClassDetailPage() {
   const { classId } = useParams<{ classId: string }>()
   const { data: cls, isLoading, isError, error, refetch } = useClassDetails(classId)
+  const [isApplicationOpen, setIsApplicationOpen] = useState(false)
 
   const apiError = error as unknown as ApiError | null
   const isFull = cls ? cls.availableSeats <= 0 : false
-
-  function handleApply() {
-    toast.info("Coming Soon", {
-      description:
-        "The admission application feature will be available soon. Please check back later.",
-    })
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -322,7 +317,7 @@ export default function ClassDetailPage() {
               </CardHeader>
               <CardContent className="pb-6">
                 <Button
-                  onClick={handleApply}
+                  onClick={() => setIsApplicationOpen(true)}
                   disabled={isFull}
                   className="gap-2"
                   aria-label={
@@ -335,6 +330,14 @@ export default function ClassDetailPage() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* ── Application Modal ── */}
+            <AdmissionApplicationForm
+              isOpen={isApplicationOpen}
+              onClose={() => setIsApplicationOpen(false)}
+              classId={(cls as ClassDetails).id}
+              classNameTitle={(cls as ClassDetails).name}
+            />
           </div>
         )}
       </div>
